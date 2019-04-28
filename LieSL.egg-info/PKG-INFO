@@ -1,0 +1,25 @@
+Metadata-Version: 1.1
+Name: LieSL
+Version: 0.0.1
+Summary: Toolbox to receive and process LSL streams.
+Home-page: https://github.com/translationalneurosurgery/stroke_tasks.git
+Author: Robert Guggenberger
+Author-email: robert.guggenberger@uni-tuebingen.de
+License: MIT
+Download-URL: https://github.com/translationalneurosurgery/stroke_tasks.git
+Description: A Python Toolbox to receive and process labstreaminglayer streams
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Console
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Education
+Classifier: Intended Audience :: Healthcare Industry
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: Information Technology
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Human Machine Interfaces
+Classifier: Topic :: Scientific/Engineering :: Medical Science Apps.
+Classifier: Topic :: Software Development :: Libraries
