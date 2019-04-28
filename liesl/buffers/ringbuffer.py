@@ -10,9 +10,10 @@ logger = logging.getLogger(__name__.split('.')[-1])
 # %%
 class SimpleRingBuffer():
     
-    def __init__(self, rowlen:int, columnlen:int) -> None:
+    def __init__(self, rowlen:int, columnlen:int, verbose=False) -> None:
         self.max_row = int(rowlen)
         self.max_column = int(columnlen)
+        self.verbose = verbose
         self.reset()
             
     def reset(self):
@@ -27,8 +28,9 @@ class SimpleRingBuffer():
         
         """        
         chunk = np.atleast_2d(chunk)
-        if chunk.shape[0] > self.max_row:            
-            logger.warning('Ringbuffer Overflow')            
+        if self.verbose:
+            if chunk.shape[0] > self.max_row:            
+                logger.warning('Ringbuffer Overflow')            
             
         buffer = np.concatenate( (self.buffer, chunk), axis=0)        
         if buffer.shape[0] > self.max_row:                               

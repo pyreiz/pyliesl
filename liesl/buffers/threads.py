@@ -9,13 +9,14 @@ from liesl.buffers.ringbuffer import SimpleRingBuffer
 #%%
 class RingBuffer(threading.Thread):
     
-    def __init__(self, stream, duration_in_ms:float=1000) -> None:
+    def __init__(self, stream, duration_in_ms:float=1000, verbose=False) -> None:
         threading.Thread.__init__(self)
         self.stream = weakref.ref(stream)
         self.fs = stream.info().nominal_srate()
         max_row = int(duration_in_ms * (self.fs/1000))
         max_column = int(stream.info().channel_count())
-        self.buffer = SimpleRingBuffer(rowlen=max_row, columnlen=max_column)
+        self.buffer = SimpleRingBuffer(rowlen=max_row, columnlen=max_column,
+                                       verbose=verbose)
 
     def reset(self):
         self.buffer.reset()
@@ -36,5 +37,5 @@ class RingBuffer(threading.Thread):
             if chunk:
                 self.buffer.put(chunk)
             else:
-                time.sleep(1/self.fs)
+                time.sleep(10/self.fs)
     
