@@ -17,15 +17,18 @@ class RingBuffer(threading.Thread):
         max_column = int(stream.info().channel_count())
         self.buffer = SimpleRingBuffer(rowlen=max_row, columnlen=max_column,
                                        verbose=verbose)
-
+        self.bufferlock = threading.Lock()
+        
     def reset(self):
+        self.bufferlock.acquire()
         self.buffer.reset()
+        self.bufferlock.release()
         
     def get(self):
-        return self.buffer.get()
-    
-    def get_only(self, *args):
-        return self.buffer.get_only(*args)
+        self.bufferlock.acquire()
+        buffer = self.buffer.get()    
+        self.bufferlock.release()
+        return buffer
     
     def stop(self):
         self.is_running = False
@@ -35,7 +38,9 @@ class RingBuffer(threading.Thread):
         while self.is_running:
             chunk, tstamp = self.stream().pull_chunk()        
             if chunk:
+                self.bufferlock.acquire()
                 self.buffer.put(chunk)
+                self.bufferlock.release()
             else:
                 time.sleep(10/self.fs)
     
