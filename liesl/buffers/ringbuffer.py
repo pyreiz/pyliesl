@@ -64,6 +64,10 @@ class SimpleRingBuffer():
     @property
     def shape(self):
         return self.buffer.shape
+    
+    @property
+    def maxshape(self):
+        return (self.max_row, self.max_column)
 
 
 class LabStreamRingBuffer():
@@ -115,6 +119,13 @@ class LabStreamRingBuffer():
         else:
             return None
         
+    @property
+    def shape(self):
+        return self._buffer.shape
+    
+    @property
+    def maxshape(self):
+        return self._buffer.maxshape
 # %%
 def _test_raw_ring():
 
