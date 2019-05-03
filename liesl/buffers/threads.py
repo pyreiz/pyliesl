@@ -42,5 +42,5 @@ class RingBuffer(threading.Thread):
                 self.buffer.put(chunk)
                 self.bufferlock.release()
             else:
-                time.sleep(10/self.fs)
+                time.sleep(0.001)
     

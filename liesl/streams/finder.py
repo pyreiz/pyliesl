@@ -9,10 +9,17 @@ import pylsl
 def open_stream(**kwargs) -> pylsl.StreamInlet:
     return pylsl.StreamInlet(select_from_available_streams(**kwargs))
 
+def open_streams(**kwargs) -> pylsl.StreamInlet:
+    streams = []
+    for inlet in available_fitting_streams(**kwargs):
+        streams.append(pylsl.StreamInlet(inlet))
+    return streams
+
 def available_streams():
     available_streams = pylsl.resolve_streams()
     for a in available_streams:
         print(a.as_xml())
+    return available_streams
         
 def select_from_available_streams(**kwargs) -> pylsl.StreamInfo:   
     '''try to find the stream based on the kwargs,
@@ -41,6 +48,39 @@ def select_from_available_streams(**kwargs) -> pylsl.StreamInfo:
         except ConnectionRefusedError:
             print('You cancelled the connection attempt')
             return None 
+
+def available_fitting_streams(**kwargs):
+    '''
+    args
+    ----
+    **kwargs:
+        keyword arguments to identify the desired stream
+        
+    returns
+    -------
+    varies: {Exception, StreamInfo, List[Streaminfo,...]}
+        if no stream was found, it raises a TimeoutError
+        otherwise it either returns a streaminfo or a list of streaminfos
+    
+    '''       
+    args = []
+    for k, v in kwargs.items():
+        args.append(f"{k}='{v}'")        
+    
+    # find all available streams, check whether they are fitting with kwargs
+    available_streams = pylsl.resolve_streams()        
+    if len(available_streams)==0:
+        raise TimeoutError('No streams found')
+    else:
+        fitting_streams = []
+        for st in available_streams:
+            for k, v in kwargs.items():
+                if eval('st.'+k+'()') != v:
+                    break
+            else:
+                fitting_streams.append(st)
+    
+    return fitting_streams
 
 def find_streams(**kwargs) -> pylsl.StreamInfo:        
     '''
