@@ -3,7 +3,7 @@
 Threaded ring and blockbuffers
 """
 import threading
-import weakref
+
 import time
 from liesl.buffers.ringbuffer import SimpleRingBuffer
 #%%
@@ -11,7 +11,7 @@ class RingBuffer(threading.Thread):
     
     def __init__(self, stream, duration_in_ms:float=1000, verbose=False, fs=None) -> None:
         threading.Thread.__init__(self)
-        self.stream = weakref.ref(stream)
+        self.stream = stream
         if fs is None:
             fs = stream.info().nominal_srate()                
         if fs == 0:
@@ -49,7 +49,7 @@ class RingBuffer(threading.Thread):
     def run(self):
         self.is_running = True
         while self.is_running:
-            chunk, tstamp = self.stream().pull_chunk()        
+            chunk, tstamp = self.stream.pull_chunk()        
             if chunk:
                 self.bufferlock.acquire()
                 self.buffer.put(chunk)
