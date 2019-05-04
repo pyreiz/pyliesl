@@ -6,6 +6,10 @@ Robert Guggenberger
 """
 import pylsl
 # %%
+def get_localhostname():
+    import socket
+    return socket.gethostname()
+
 def open_stream(**kwargs) -> pylsl.StreamInlet:
     return pylsl.StreamInlet(select_from_available_streams(**kwargs))
 
