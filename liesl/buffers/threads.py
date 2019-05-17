@@ -3,7 +3,6 @@
 Threaded ring and blockbuffers
 """
 import threading
-
 import time
 from liesl.buffers.ringbuffer import SimpleRingBuffer
 #%%
@@ -22,6 +21,8 @@ class RingBuffer(threading.Thread):
         max_column = int(stream.info().channel_count())
         self.buffer = SimpleRingBuffer(rowlen=max_row, columnlen=max_column,
                                        verbose=verbose)
+        self.tstamps = SimpleRingBuffer(rowlen=max_row, columnlen=1,
+                                       verbose=verbose)
         self.bufferlock = threading.Lock()
         
     def reset(self):
@@ -31,9 +32,17 @@ class RingBuffer(threading.Thread):
         
     def get(self):
         self.bufferlock.acquire()
-        buffer = self.buffer.get()    
+        buffer = self.buffer.get()            
         self.bufferlock.release()
         return buffer
+
+    def get_timed(self):
+        with self.bufferlock:
+            buffer = self.buffer.get()    
+            tstamps = self.tstamps.get()           
+        tstamps += self.offset
+        return buffer, tstamps
+    
     
     @property
     def shape(self):
@@ -48,12 +57,13 @@ class RingBuffer(threading.Thread):
         
     def run(self):
         self.is_running = True
+        self.offset = self.stream.time_correction()
         while self.is_running:
-            chunk, tstamp = self.stream.pull_chunk()        
+            chunk, tstamp = self.stream.pull_chunk()                
             if chunk:
-                self.bufferlock.acquire()
-                self.buffer.put(chunk)
-                self.bufferlock.release()
+                with self.bufferlock:
+                    self.buffer.put(chunk)
+                    self.tstamps.put(tstamp, transpose=True)              
             else:
                 time.sleep(0.001)
     

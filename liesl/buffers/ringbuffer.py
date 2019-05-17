@@ -20,7 +20,7 @@ class SimpleRingBuffer():
         self.buffer = np.empty( (0, self.max_column) ) 
         
     
-    def put(self, chunk:list or np.ndarray):           
+    def put(self, chunk:list or np.ndarray, transpose=False):           
         """append a chunk of data and delete old samples
         
         should be faster than the implementation using np.roll according to 
@@ -31,6 +31,9 @@ class SimpleRingBuffer():
         if self.verbose:
             if chunk.shape[0] > self.max_row:            
                 logger.warning('Ringbuffer Overflow')            
+            
+        if transpose:
+            chunk = chunk.T
             
         buffer = np.concatenate( (self.buffer, chunk), axis=0)        
         if buffer.shape[0] > self.max_row:                               
