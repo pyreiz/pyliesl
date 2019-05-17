@@ -19,6 +19,13 @@ def inlet_to_dict(inlet):
         a dictionary of key information parsed from the xml
     '''
     return streaminfoxml_to_dict(inlet.info().as_xml())
+
+def inlet_to_chanidx(inlet):
+    info = inlet_to_dict(inlet)
+    labels = {}
+    for chan in info['desc']['channels']['channel']:
+        labels[chan['label']] = chan['idx']
+    return labels
     
 def streaminfoxml_to_dict(xml:str):
     '''
