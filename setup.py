@@ -1,6 +1,5 @@
 from distutils.core import setup
 
-
 setup(
     name='LieSL',
     version='0.0.1',
@@ -8,10 +7,12 @@ setup(
     long_description='A Python Toolbox to receive and process labstreaminglayer streams',
     author='Robert Guggenberger',
     author_email='robert.guggenberger@uni-tuebingen.de',
-    url='https://github.com/translationalneurosurgery/stroke_tasks.git',
-    download_url='https://github.com/translationalneurosurgery/stroke_tasks.git',
+    url='https://github.com/pyreiz/pyliesl',
+    download_url='https://github.com/pyreiz/pyliesl',
     license='MIT',
     packages=['liesl'],
+    entry_points = {'console_scripts': ['liesl=liesl.cli.main:main'],
+                   },
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
