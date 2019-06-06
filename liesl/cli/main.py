@@ -21,7 +21,8 @@ def get_args():
     parser_cfg.add_argument('--global', dest="_global", action="store_true", help="global")
     parser_cfg.add_argument('--local', action="store_true", help="local")
     
-
+    helpstr = """list available LSL streams"""
+    parser_cfg = subparsers.add_parser('list', help=helpstr)        
     
     helpstr = """mock a LSL stream"""
     parser_cfg = subparsers.add_parser('mock', help=helpstr)    
@@ -49,5 +50,9 @@ def main():
         print(m)
         m.run()
     
+    if args.subcommand == "list":
+        from liesl.streams.finder import available_streams
+        available_streams()
+        
 if __name__ == '__main__':
     get_args()

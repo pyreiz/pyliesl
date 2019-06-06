@@ -2,8 +2,9 @@ from subprocess import PIPE, Popen
 from pathlib import Path
 from liesl.xdf.labrecorder.fio import Run, follow_lnk, find_file
 import logging
-logger = logging.getLogger()
 import time
+from typing import List
+logger = logging.getLogger()
 logging.basicConfig(level=logging.DEBUG)
 # %%                  
 
@@ -48,11 +49,10 @@ class LabRecorderCLI():
     Example::
                       
         filename = '~/Desktop/untitled.xdf'
-        streams = "type='EEG' type='Markers'"        
-        streams = "type='dfg'"
-        streams = "type='EEG'"
-        lr = LabRecorderCLI()
-        lr.start_recording(streams, filename)        
+        streamargs = [{"type":"EEG"},{"type":"Marker"}]
+        streamargs = [{"type":"EEG", "name":"Liesl-Mock"},{"type":"Marker"}]
+        lr = LabRecorderCLI()   
+        lr.start_recording(filename, streamargs)       
         time.sleep(5)    
         lr.stop_recording()
         
@@ -60,18 +60,35 @@ class LabRecorderCLI():
     def __init__(self, path_to_cmd:str="~") -> None:    
         self.cmd = find_lrcmd(path_to_cmd)
                 
-    def start_recording(self, streams:str,
-                        filename:str="~/recordings/recording.xdf") -> None:
+    def start_recording(self, filename:str="~/recordings/recording.xdf",
+                        streamargs:List[dict,]=None) -> None:
+        if streamargs is None:
+            raise ValueError("No streams were specified")
+        
         filename = Run(filename)   
         filename.parent.mkdir(exist_ok=True, parents=True)
-        self.t0 = time.time()
+        
+        streams = ""
+        for si, sargs in enumerate(streamargs):
+            stream = "\""
+            for i, (k,v) in enumerate(sargs.items()):                            
+                prt = f"{k}='{v}'"    
+                if i > 0:
+                    prt = " and " + prt
+                stream += prt            
+            stream += "\""
+            if si>0:
+                stream = " " + stream
+            streams += stream 
+        
         self.process = Popen(' '.join( (str(self.cmd),
                                         str(filename),
                                         str(streams)) ),
-                             stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1)   
+                             stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1)           
         peek =  self.process.stdout.peek()
         if b'matched no stream' in peek:            
             raise ConnectionError(peek.decode().strip())
+        self.t0 = time.time()
         logger.info('Start recording to {0}'.format(filename))
 
     def stop_recording(self) -> None:        
