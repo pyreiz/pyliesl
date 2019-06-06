@@ -26,9 +26,9 @@ class Mock(threading.Thread):
         if source_id == None:
             source_id = str(hash(self))
             
-        info = StreamInfo(name, type, channel_count, nominal_srate,  
-                          channel_format, source_id)
-        self.outlet = StreamOutlet(info)
+        self.info = StreamInfo(name, type, channel_count, nominal_srate,  
+                           channel_format, source_id)
+        self.outlet = StreamOutlet(self.info)
         self.channel_count = channel_count
     
     def stop(self):
@@ -46,3 +46,7 @@ class Mock(threading.Thread):
             # now send it and wait for a bit
             self.outlet.push_sample(mysample)
             time.sleep(0.01)
+            
+    def __str__(self):
+        return self.info.as_xml()
+    

@@ -2,7 +2,7 @@
 """
 Created on Wed Jun  5 16:48:56 2019
 
-@author: Messung
+@author: Robert Guggenberger
 """
 
 
@@ -21,6 +21,13 @@ def get_args():
     parser_cfg.add_argument('--global', dest="_global", action="store_true", help="global")
     parser_cfg.add_argument('--local', action="store_true", help="local")
     
+
+    
+    helpstr = """mock a LSL stream"""
+    parser_cfg = subparsers.add_parser('mock', help=helpstr)    
+    parser_cfg.add_argument('--name', help="name of the stream", default="Liesl-Mock")
+    parser_cfg.add_argument('--type', help="type of the stream", default="EEG")
+
     return parser.parse_known_args()
                    
 def main():
@@ -35,7 +42,12 @@ def main():
                 init_lsl_api_cfg("global")
             if args.local:
                 init_lsl_api_cfg("local")
-              
+    if args.subcommand == "mock":
+        from liesl.test.mock import Mock
+        m = Mock(name=args.name,
+                 type=args.type)
+        print(m)
+        m.run()
     
 if __name__ == '__main__':
     get_args()
