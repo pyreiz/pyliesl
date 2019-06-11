@@ -44,9 +44,15 @@ def main():
             if args.local:
                 init_lsl_api_cfg("local")
     if args.subcommand == "mock":
-        from liesl.test.mock import Mock
-        m = Mock(name=args.name,
-                 type=args.type)
+        
+        if "marker" in args.type.lower():
+            from liesl.test.mock import MarkerMock
+            m = MarkerMock(name=args.name,
+                           type=args.type)
+        else:
+            from liesl.test.mock import Mock
+            m = Mock(name=args.name,
+                     type=args.type)
         print(m)
         m.run()
     
