@@ -25,7 +25,7 @@ class RingBuffer(threading.Thread):
         self.tstamps = SimpleRingBuffer(rowlen=max_row, columnlen=1,
                                        verbose=verbose)
         self.bufferlock = threading.Lock()
-        self.is_running = threading.Event()
+        self._is_running = threading.Event()        
         
     def reset(self):
         self.bufferlock.acquire()
@@ -58,12 +58,31 @@ class RingBuffer(threading.Thread):
     def stop(self):
         self.is_running.clear()
         self.join()
-        
-    def run(self):
-        self.is_running.set()
+    
+    @property
+    def is_running(self):
+        return self._is_running.is_set()
+    
+    @is_running.setter
+    def is_running(self, state:bool):
+        if state:
+            self._is_running.set()
+        else:
+            self._is_running.clear()
+
+    def await_running(self):
+        print('[', end='')
+        while not self.is_running:
+            time.sleep(0.1)
+            print('.', end='')
+        print(']')
+            
+    
+    def run(self):        
         stream = StreamInlet(self.streaminfo) #create the inlet locally so it can be properly garbage collected
         self.offset = stream.time_correction()
-        while self.is_running.is_set():
+        self.is_running = True
+        while self.is_running:
             chunk, tstamp = stream.pull_chunk()                
             if chunk:
                 with self.bufferlock: #to prevent writing while reading 
