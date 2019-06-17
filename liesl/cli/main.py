@@ -24,6 +24,8 @@ def get_args():
     
     helpstr = """list available LSL streams"""
     parser_cfg = subparsers.add_parser('list', help=helpstr)        
+    parser_cfg.add_argument('--field', help="which field to print", 
+                            default="any")
     
 
     helpstr = """Visualize a specific LSL streams"""
@@ -88,8 +90,15 @@ def main():
         return
     
     if args.subcommand == "list":
-        from liesl.streams.finder import available_streams
-        available_streams()
+        
+        from liesl.streams.finder import available_streams        
+        if args.field == "any":
+            available_streams()
+        else:
+            streams = available_streams(do_print=False)
+            for a in streams:
+                print(getattr(a, args.field)())
+        
         return
     
 if __name__ == '__main__':

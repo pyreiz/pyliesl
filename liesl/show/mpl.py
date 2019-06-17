@@ -16,10 +16,13 @@ def main(**kwargs):
     else:
         limit_channels = False
     
-    stream = liesl.select_from_available_streams(**kwargs)
+    stream = liesl.select_from_available_streams(**kwargs)    
     buffer = liesl.RingBuffer(stream, duration_in_ms=1000)
     buffer.start()
     buffer.await_running()
+    labels = []
+    for chan in buffer.info['desc']['channels']['channel']:
+        labels.append(chan['label'])
     fig, ax = plt.subplots(1,1)
     while plt.fignum_exists(fig.number):
         plt.pause(0.05)
@@ -29,8 +32,7 @@ def main(**kwargs):
             ax.plot(tstamp, chunks[:, channel])
         else:
             ax.plot(tstamp, chunks)
-        ax.legend(('x','y','z'), loc='upper left')
-
+        ax.legend(labels, loc='upper left')
     
 if __name__ == "__main__":
     stream = liesl.open_stream(type='Acc', hostname='TRAINER-001')

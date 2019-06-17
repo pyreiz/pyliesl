@@ -24,10 +24,11 @@ def open_streams(**kwargs) -> pylsl.StreamInlet:
         streams.append(pylsl.StreamInlet(inlet))
     return streams
 
-def available_streams():
+def available_streams(do_print=True):
     available_streams = pylsl.resolve_streams()
-    for a in available_streams:
-        print(a.as_xml())
+    if do_print:
+        for a in available_streams:
+            print(a.as_xml())
     return available_streams
         
 def select_from_available_streams(**kwargs) -> pylsl.StreamInfo:   

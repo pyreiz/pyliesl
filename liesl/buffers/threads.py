@@ -5,6 +5,7 @@ Threaded ring and blockbuffers
 import threading
 import time
 from liesl.buffers.ringbuffer import SimpleRingBuffer
+from liesl.tools.convert import inlet_to_dict
 from pylsl import StreamInlet
 #%%
 class RingBuffer(threading.Thread):
@@ -80,6 +81,7 @@ class RingBuffer(threading.Thread):
     
     def run(self):        
         stream = StreamInlet(self.streaminfo) #create the inlet locally so it can be properly garbage collected
+        self.info = inlet_to_dict(stream)
         self.offset = stream.time_correction()
         self.is_running = True
         while self.is_running:
