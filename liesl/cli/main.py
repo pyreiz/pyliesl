@@ -30,8 +30,9 @@ def get_args():
     parser_cfg = subparsers.add_parser('show', help=helpstr)    
     parser_cfg.add_argument('--name', help="name of the stream")
     parser_cfg.add_argument('--type', help="type of the stream")
-    parser_cfg.add_argument('--channel', help="which channel to visualize", 
-                            default=0, type=int)
+    parser_cfg.add_argument('--channel', help="which channel to visualize", type=int)
+    parser_cfg.add_argument('--textplot', action="store_true", 
+                            help="whether to use textplot or mpl")
     
     helpstr = """mock a LSL stream"""
     parser_cfg = subparsers.add_parser('mock', help=helpstr)    
@@ -39,12 +40,11 @@ def get_args():
                             default="Liesl-Mock")
     parser_cfg.add_argument('--type', help="type of the stream",
                             default="EEG")
-
     return parser.parse_known_args()
                    
 def main():
     args, unknown = get_args()
-    print(args)
+    #print(args)
     if args.subcommand == "config":
        if args.init:
             from liesl.cli.lsl_api import init_lsl_api_cfg
@@ -54,17 +54,25 @@ def main():
                 init_lsl_api_cfg("global")
             if args.local:
                 init_lsl_api_cfg("local")
+       return
+   
     if args.subcommand == "show":
-        from liesl.show.textplot import main
-        kwargs = vars(args)
+        kwargs = vars(args)        
+        if args.textplot:
+            from liesl.show.textplot import main            
+            kwargs["channel"] = kwargs.get("channel", 0)
+        else:
+            from liesl.show.mpl import main        
+            
         del kwargs["subcommand"]
-        
+        del kwargs["textplot"]        
         arguments = dict()
         for k,v in kwargs.items():
             if v is not None:
                 arguments[k] = v
         main(**arguments)
-        
+        return
+    
     if args.subcommand == "mock":
         
         if "marker" in args.type.lower():
@@ -77,10 +85,12 @@ def main():
                      type=args.type)
         print(m)
         m.run()
+        return
     
     if args.subcommand == "list":
         from liesl.streams.finder import available_streams
         available_streams()
-        
+        return
+    
 if __name__ == '__main__':
     get_args()
