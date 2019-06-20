@@ -5,6 +5,7 @@ Created on Tue Nov  6 13:35:12 2018
 Robert Guggenberger
 """
 import pylsl
+from functools import wraps
 # %%
 def get_info(stream):
     info = stream.info()
@@ -31,6 +32,12 @@ def available_streams(do_print=True):
             print(a.as_xml())
     return available_streams
         
+def get_streaminfo_matching(**kwargs) -> pylsl.StreamInfo:   
+    return select_from_available_streams(**kwargs)
+
+def get_stream_matching(**kwargs) -> pylsl.StreamInfo:   
+    return open_stream(**kwargs)
+
 def select_from_available_streams(**kwargs) -> pylsl.StreamInfo:   
     '''try to find the stream based on the kwargs,
     if more than one were found, interactively select one

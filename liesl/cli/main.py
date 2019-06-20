@@ -42,6 +42,8 @@ def get_args():
                             default="Liesl-Mock")
     parser_cfg.add_argument('--type', help="type of the stream",
                             default="EEG")
+    parser_cfg.add_argument('--channel_count', help="number of channels",
+                            type=int, default=8)
     return parser.parse_known_args()
                    
 def main():
@@ -80,13 +82,15 @@ def main():
         if "marker" in args.type.lower():
             from liesl.test.mock import MarkerMock
             m = MarkerMock(name=args.name,
-                           type=args.type)
+                           type=args.type,
+                           )
         else:
             from liesl.test.mock import Mock
             m = Mock(name=args.name,
-                     type=args.type)
+                     type=args.type,
+                     channel_count=args.channel_count)
         print(m)
-        m.run()
+        m.start()
         return
     
     if args.subcommand == "list":
