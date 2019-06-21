@@ -5,7 +5,17 @@ Created on Tue Nov  6 13:35:12 2018
 Robert Guggenberger
 """
 import pylsl
+from functools import wraps
 # %%
+def get_info(stream):
+    info = stream.info()
+    return pylsl.StreamInfo(name=info.name(), 
+                            type=info.type(), 
+                            channel_count=info.channel_count(),
+                            nominal_srate=info.nominal_srate(),
+                            channel_format=info.channel_format(),
+                            source_id=info.source_id())
+
 def open_stream(**kwargs) -> pylsl.StreamInlet:
     return pylsl.StreamInlet(select_from_available_streams(**kwargs))
 
@@ -15,17 +25,24 @@ def open_streams(**kwargs) -> pylsl.StreamInlet:
         streams.append(pylsl.StreamInlet(inlet))
     return streams
 
-def available_streams():
+def available_streams(do_print=True):
     available_streams = pylsl.resolve_streams()
-    for a in available_streams:
-        print(a.as_xml())
+    if do_print:
+        for a in available_streams:
+            print(a.as_xml())
     return available_streams
         
+def get_streaminfo_matching(**kwargs) -> pylsl.StreamInfo:   
+    return select_from_available_streams(**kwargs)
+
+def get_stream_matching(**kwargs) -> pylsl.StreamInfo:   
+    return open_stream(**kwargs)
+
 def select_from_available_streams(**kwargs) -> pylsl.StreamInfo:   
     '''try to find the stream based on the kwargs,
     if more than one were found, interactively select one
     '''             
-    fitting_streams = find_streams(**kwargs)
+    fitting_streams = find_fitting_streaminfos(**kwargs)
     if type(fitting_streams) is pylsl.StreamInfo:
         return fitting_streams
     else:
@@ -82,7 +99,7 @@ def available_fitting_streams(**kwargs):
     
     return fitting_streams
 
-def find_streams(**kwargs) -> pylsl.StreamInfo:        
+def find_fitting_streaminfos(**kwargs) -> pylsl.StreamInfo:        
     '''
     args
     ----
@@ -101,18 +118,7 @@ def find_streams(**kwargs) -> pylsl.StreamInfo:
         args.append(f"{k}='{v}'")        
     
     # find all available streams, check whether they are fitting with kwargs
-    available_streams = pylsl.resolve_streams()        
-    if len(available_streams)==0:
-        raise TimeoutError('No streams found')
-    else:
-        fitting_streams = []
-        for st in available_streams:
-            for k, v in kwargs.items():
-                if eval('st.'+k+'()') != v:
-                    break
-            else:
-                fitting_streams.append(st)
-    del available_streams
+    fitting_streams = available_fitting_streams(**kwargs)
     
     # either throws a timepout, returns a streaminfo or a list of streaminfos
     if len(fitting_streams)==0:
