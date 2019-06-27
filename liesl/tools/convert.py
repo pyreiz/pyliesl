@@ -4,8 +4,11 @@ Parse lsl xml and return a dictionary
 Robert Guggenberger
 """
 from liesl.tools._xmltodict import parse as xml_to_dict
+from typing import Dict
+from pylsl import StreamInlet
+ChannelIndexMap = Dict[str, int]
 # %%
-def inlet_to_dict(inlet):
+def inlet_to_dict(inlet:StreamInlet) -> dict:
     '''
     args
     ----
@@ -20,14 +23,14 @@ def inlet_to_dict(inlet):
     '''
     return streaminfoxml_to_dict(inlet.info().as_xml())
 
-def inlet_to_chanidx(inlet):
+def inlet_to_chanidx(inlet:StreamInlet) -> ChannelIndexMap:
     info = inlet_to_dict(inlet)
     labels = {}
     for chan in info['desc']['channels']['channel']:
         labels[chan['label']] = chan['idx']
     return labels
     
-def streaminfoxml_to_dict(xml:str):
+def streaminfoxml_to_dict(xml:str) -> dict:
     '''
     args
     ----
