@@ -6,6 +6,7 @@ Robert Guggenberger
 """
 import pylsl
 from functools import wraps
+from liesl.tools.convert import xml_to_dict
 # %%
 def get_info(stream):
     info = stream.info()
@@ -31,6 +32,12 @@ def available_streams(do_print=True):
         for a in available_streams:
             print(a.as_xml())
     return available_streams
+
+def get_source_id(**kwargs):    
+    info = select_from_available_streams(**kwargs)    
+    val = dict(xml_to_dict(info.as_xml())["info"])["source_id"]            
+    sid = {"source_id":val}
+    return sid
         
 def get_streaminfo_matching(**kwargs) -> pylsl.StreamInfo:   
     return select_from_available_streams(**kwargs)
@@ -122,7 +129,8 @@ def find_fitting_streaminfos(**kwargs) -> pylsl.StreamInfo:
     
     # either throws a timepout, returns a streaminfo or a list of streaminfos
     if len(fitting_streams)==0:
-        raise TimeoutError('No streams found')
+        print("\a")
+        raise TimeoutError('No streams maching {0} found'.format(str(kwargs)))
         
     if len(fitting_streams)==1:
         return fitting_streams[0]

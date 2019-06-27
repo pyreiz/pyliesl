@@ -1,6 +1,7 @@
 from subprocess import PIPE, Popen
 from pathlib import Path
-from liesl.xdf.labrecorder.fio import Run, follow_lnk, find_file
+from liesl.files.labrecorder.manager import follow_lnk, find_file, validate
+from liesl.files.run import Run
 import logging
 import time
 from typing import List
@@ -15,6 +16,12 @@ def find_lrcmd(path_to_cmd:str="~"):
     
     # this is the full correct path to command
     if path_to_cmd.name == "LabRecorderCLI.exe":
+        return path_to_cmd
+
+    if path_to_cmd.suffixes[-1]   == ".lnk":
+        path_to_cmd = follow_lnk(path_to_cmd).parent / "LabRecorderCLI.exe"
+        if not path_to_cmd.exists():
+            raise FileNotFoundError("Path to command does not exist")
         return path_to_cmd
     
     # the command is directly in the folder 
@@ -57,19 +64,46 @@ class LabRecorderCLI():
         lr.stop_recording()
         
     '''
-    def __init__(self, path_to_cmd:str="~") -> None:    
+    def bind(self, streamargs:List[dict,]=[None]) -> None:
+        """bind a set of required streams to start recording
+        Recording will throw a ConnectionError if these streams are not present 
+        at time of binding or at the time of starting a recording        
+        """
+        self.streamargs = validate(streamargs) if streamargs is not None \
+                                                                    else None
+    def validate(self):
+        validate(self.streamargs)
+    
+    def __init__(self, path_to_cmd:str="~") -> None:
+        self.streamargs= None
         self.cmd = find_lrcmd(path_to_cmd)
                 
+    def __enter__(self):        
+        return self
+    
+    def __exit__(self, exc_type, exc_value, traceback):
+        if exc_type is not None:
+            if exc_type is ConnectionError:
+                print(exc_value)
+                raise exc_type("Not all required streams were found")
+            else:
+                raise exc_type
+    
     def start_recording(self, filename:str="~/recordings/recording.xdf",
                         streamargs:List[dict,]=None) -> None:
-        if streamargs is None:
-            raise ValueError("No streams were specified")
         
+        if streamargs is not None:
+            self.streamargs = self.bind(streamargs)
+            
+        if self.streamargs is None:
+            raise ValueError("No streams were specified")
+            
         filename = Run(filename)   
         filename.parent.mkdir(exist_ok=True, parents=True)
         
+        # start encoding the command 
         streams = ""
-        for si, sargs in enumerate(streamargs):
+        for si, sargs in enumerate(self.streamargs):
             stream = "\""
             for i, (k,v) in enumerate(sargs.items()):                            
                 prt = f"{k}='{v}'"    
@@ -81,22 +115,30 @@ class LabRecorderCLI():
                 stream = " " + stream
             streams += stream 
         
+        # start the recording process
         self.process = Popen(' '.join( (str(self.cmd),
                                         str(filename),
                                         str(streams)) ),
                              stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1)           
         peek =  self.process.stdout.peek()
         if b'matched no stream' in peek:            
-            raise ConnectionError(peek.decode().strip())
+            self.stop_recording()
+            print('\a') #makes a platfrom independent beep
+            raise ConnectionError(peek.decode().strip())            
         self.t0 = time.time()
         logger.info('Start recording to {0}'.format(filename))
 
+
+    def close(self) -> None:
+        self.stop_recording()
+        
     def stop_recording(self) -> None:        
         if hasattr(self, 'process'):       
             o, e = self.process.communicate(b'\n')
             if self.process.poll() != 0:
                 raise ConnectionError(o + e)            
-        dur = time.time()-self.t0
-        logger.info('Stopped recording after {0}s'.format(dur))
+            del self.process
+            self.dur = time.time()-self.t0
+        logger.info('Stopped recording after {0}s'.format(self.dur))
         
 # %%
