@@ -33,8 +33,8 @@ def get_args():
     parser_cfg.add_argument('--name', help="name of the stream")
     parser_cfg.add_argument('--type', help="type of the stream")
     parser_cfg.add_argument('--channel', help="which channel to visualize", type=int)
-    parser_cfg.add_argument('--textplot', action="store_true", 
-                            help="whether to use textplot or mpl")
+    parser_cfg.add_argument('--backend', choices=["mpl", "textplot", "reizbar"],
+                            default="mpl", help="what backend to use")
     
     helpstr = """mock a LSL stream"""
     parser_cfg = subparsers.add_parser('mock', help=helpstr)    
@@ -44,11 +44,20 @@ def get_args():
                             default="EEG")
     parser_cfg.add_argument('--channel_count', help="number of channels",
                             type=int, default=8)
+    
+    helpstr = """inspect an XDF file"""
+    parser_cfg = subparsers.add_parser('xdf', help=helpstr)    
+    parser_cfg.add_argument('filename', help="filename")
+    
     return parser.parse_known_args()
                    
 def main():
     args, unknown = get_args()
     #print(args)
+    if args.subcommand == "xdf":
+        from liesl.files.xdf.inspect_xdf import main
+        main(args.filename)
+        
     if args.subcommand == "config":
        if args.init:
             from liesl.cli.lsl_api import init_lsl_api_cfg
@@ -60,16 +69,19 @@ def main():
                 init_lsl_api_cfg("local")
        return
    
-    if args.subcommand == "show":
+    if args.subcommand == "show":        
         kwargs = vars(args)        
-        if args.textplot:
+        
+        if args.backend == "textplot":
             from liesl.show.textplot import main            
             kwargs["channel"] = kwargs.get("channel", 0)
-        else:
+        elif args.backend == "reizbar":            
+            from liesl.show.reiz_bar import main
+        else:            
             from liesl.show.mpl import main        
-            
+        
+        del kwargs["backend"]        
         del kwargs["subcommand"]
-        del kwargs["textplot"]        
         arguments = dict()
         for k,v in kwargs.items():
             if v is not None:
