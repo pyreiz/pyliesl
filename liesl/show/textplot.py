@@ -54,8 +54,7 @@ def plot(y, x=None, width=80, height=18):
         y.append(new_y) 
         
     margin = max(len(f'{mi}'), len(f'{ma}')) # space left for y-labels
-    print
-
+    
     for h in range(height - 1, -1, -1):
         s = [' '] * width
         for x in range(width):
@@ -80,6 +79,74 @@ def plot(y, x=None, width=80, height=18):
         if h == height//2:
             s = s.replace(" ", "-")
         print(prefix + " | " + s)
+
+    # Print x values
+    bottom = " " * (margin + 3)
+    offset = len("%g" % a)
+    bottom += ("%g" % a).ljust(width//2 - offset)
+    bottom += ("%g" % ((a + b)/2)).ljust(width//2)
+    bottom += "%g" % b
+    print(bottom)
+    
+def plot_crude(y, x=None, width=80, height=18):
+    """
+    Print a crude ASCII art plot
+    """
+    y_raw = y.copy()    
+    
+    if x is None:
+        x_raw = [x for x in range(len(y))]
+    else:
+        x_raw = x.copy()    
+        
+    if len(x_raw) != len(y_raw):
+        raise ValueError("Unequal len of x and y")
+    
+    ma = max(y_raw)    
+    mi = min(y_raw)
+    a = min(x_raw)
+    b =  max(x_raw)
+    # Normalize height to screen space
+    
+    x = linspace(0, len(x_raw)-1, width)        
+        
+    if ma == mi:
+        if ma:
+            mi, ma = sorted([0, 2*ma])
+        else:
+            mi, ma = -1, 1
+            
+    y = []        
+    for ix in x:
+        new_y = int(float(height)*(y_raw[ix] - mi)/(ma - mi))
+        y.append(new_y) 
+        
+    margin = 0 # space left for y-labels
+    
+    for h in range(height - 1, -1, -1):
+        s = [' '] * width
+        for x in range(width):
+            if y[x] == h:
+                if (x == 0 or y[x - 1] == h - 1) and (x == width - 1 or y[x + 1] == h + 1):
+                    s[x] = '/'
+                elif (x == 0 or y[x - 1] == h + 1) and (x == width - 1 or y[x + 1] == h - 1):
+                    s[x] = '\\'
+                else:
+                    s[x] = '.'
+
+        # Print y values
+        if h == height - 1:
+            prefix = ("%g" % ma).rjust(margin)[:margin]
+        elif h == height//2:
+            prefix = ("%g" % ((mi + ma)/2)).rjust(margin)[:margin]
+        elif h == 0:
+            prefix = ("%g" % mi).rjust(margin)[:margin]
+        else:
+            prefix = " "*margin
+        s = "".join(s)
+        if h == height//2:
+            s = s.replace(" ", "-")
+        print(s)
 
     # Print x values
     bottom = " " * (margin + 3)
