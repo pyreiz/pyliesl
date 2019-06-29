@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Jun  5 17:15:33 2019
-
-@author: Messung
-"""
-
 import pathlib
 import shutil
 #%%
@@ -26,5 +20,4 @@ def get_target_for_lsl_api_cfg(level:str):
 def init_lsl_api_cfg(level:str):
     targetfile = get_target_for_lsl_api_cfg(level)
     copy_lsl_api_cfg(targetfile)
-    
-init_lsl_api_cfg("local")
+    print("Created a configuration file at", targetfile)
