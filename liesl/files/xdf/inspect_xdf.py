@@ -1,5 +1,8 @@
 from pyxdf import load_xdf
 from collections import Counter
+from array import array
+from math import floor
+import textwrap
 # %%
 def linspace(a, b, n=80):
     if n < 2:
@@ -7,7 +10,7 @@ def linspace(a, b, n=80):
     diff = (float(b) - a)/(n - 1)
     return [int(diff * i + a) for i in range(n)]
     
-def plot(y, x=None, width=80, height=18):
+def plot(y, x=None, width=80, height=10):
     """Print a crude ASCII art plot"""
     y_raw = y.copy()    
     
@@ -19,8 +22,9 @@ def plot(y, x=None, width=80, height=18):
     if len(x_raw) != len(y_raw):
         raise ValueError("Unequal len of x and y")
     
-    # smoothen because heavy aliasing and outlier issues
-    if len(y_raw) > 80 *100: 
+    # smoothen and downsample because we have only <width> char available and 
+    # too many samples cause aliasing and outlier issues
+    if len(y_raw) > width * 100: 
         step  = len(y_raw)//79
         smooth_y = []
         smooth_x = []
@@ -51,62 +55,38 @@ def plot(y, x=None, width=80, height=18):
             
     y = []        
     for ix in x:
-        new_y = int(float(height)*(y_raw[ix] - mi)/(ma - mi))
+        new_y = (y_raw[ix] - mi) / (ma - mi)
+        new_y = floor(new_y * (height-1))
         y.append(new_y) 
+   
+
+    canvas = []
+    for lix in range(height):
+        line = array('u',' '*width)
+        canvas.append(line)    
+    
+    def put(canvas, xpos, ypos, symbol):        
+        canvas[len(canvas)-ypos-1][xpos] = symbol
         
-    margin = 0 # space left for y-labels
-
-    offset = 1/height
-    for h in range(height - 1, -1, -1):
-        s = [' '] * width
-        for x in range(width):
-            try:
-                if y[x] == h:          
-                    if  y[x - 1] < y[x] and  y[x+1] > y[x]:
-                        s[x] = "╱"
-                    elif y[x - 1] > y[x] and  y[x+1] < y[x]:
-                        s[x] = "╲"
-                    elif y[x - 1] > y[x] and  y[x+1] == y[x]:
-                        s[x] = "╰"
-                    elif y[x - 1] < y[x] and  y[x+1] == y[x]:
-                        s[x] = "╭"         
-                    elif y[x - 1] == y[x] and  y[x+1] > y[x]:
-                        s[x] = "╯"
-                    elif y[x - 1] == y[x] and  y[x+1] < y[x]:
-                        s[x] = "╮"
-                    elif y[x - 1] == y[x] and  y[x+1] == y[x]:
-                        s[x] = '─'
-                    elif y[x - 1] > y[x] and  y[x+1] > y[x]:
-                        s[x] = "v"
-                    elif y[x - 1] < y[x] and  y[x+1] < y[x]:
-                        s[x] = "^"                    
-                    else:
-                        s[x] = "X"
-                        
-                if  y[x - 1] < y[x] and  y[x+1] > y[x]:
-                    if h>y[x - 1] and h<y[x + 1]:
-                        s[x] = "│"
-                if y[x - 1] > y[x] and  y[x+1] < y[x]:
-                    if h<y[x - 1] and h>y[x + 1]:
-                        s[x] = "│"
-                     
-            except IndexError:
-                if y[x] == h:   
-                    s[x] = "-"
-
-            #    if (x == 0 or y[x - 1] == h - 1) and (x == width - 1 or y[x + 1] == h + 1):
-            #        s[x] = '/'
-            #    elif (x == 0 or y[x - 1] == h + 1) and (x == width - 1 or y[x + 1] == h - 1):
-            #        s[x] = '\\'
-            #    else:
-            #        s[x] = '.'
-
-        s = "".join(s)
-        #if h == height//2:
-        #    s = s.replace(" ", "-")
-        print(s)
-
-    # Print x values
+    for xix, (pre, val, post) in enumerate(zip([y[0]]+y, y, y[1:]+[y[-1]])):        
+      #  canvas[val][xix] = '─'
+        if val < post:                        
+            for l in range(val, post):                
+                put(canvas, xix, l, "│")
+            put(canvas, xix, post, "╭")
+            put(canvas, xix, val, "╯")
+        if val > post:                        
+            for l in range(post, val):                
+                put(canvas, xix, l, "│")
+            put(canvas, xix, post, "╰")
+            put(canvas, xix, val, "╮")
+        if val == post:         
+            put(canvas, xix, val, '─')
+        
+    for line in canvas:
+        print(line.tounicode())
+    
+    
     bottom = ""
     offset = len("%g" % a)
     bottom += ("%g" % a).ljust(width//2 - offset)
@@ -131,7 +111,7 @@ def main(filename):
         fs = s["info"]["nominal_srate"][0]
         print(line.format(name, typ, cc, fs, sid))
     
-    print("\n\n")
+    print("\n")
     
     line = "{0:<30s}{1:>50s}"
     for s in streams:   
@@ -142,7 +122,14 @@ def main(filename):
             print(line.format(name, "Events"))
             print('-'*80)
             for key, val in events.items():
-                print("{0}{1:>{align}}".format(key, val, align=80-len(key)))
+                if key == "":
+                    wrapped_key = '\"\"'
+                else:
+                    wrapped_key = textwrap.shorten(key, width=54, 
+                                               placeholder="...")
+                alignment = 80-len(wrapped_key)
+                print("{0}{1:>{align}}".format(wrapped_key, 
+                                               val, align=alignment))
             
             print()
         else:
@@ -154,7 +141,10 @@ def main(filename):
             print()
             
 if __name__ == "__main__":
-    import sys
-    main(sys.argv[1])
-    input()
+    #import sys
+    #main(sys.argv[1])
+    #input()
+    import random
+    random.seed(1)
+    y = [random.random() for y in range(0,100,1)]
     
