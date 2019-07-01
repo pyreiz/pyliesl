@@ -16,58 +16,62 @@ def get_args():
                 locally in this folder with local"""
     
     parser_cfg = subparsers.add_parser('config', help=helpstr)        
-    parser_cfg.add_argument('init', action="store_true", help=helpstr)
-    parser_cfg.add_argument('--system', action="store_true", help="system-wide")
-    parser_cfg.add_argument('--global', dest="_global", action="store_true", help="global")
-    parser_cfg.add_argument('--local', action="store_true", help="local")
+    helpstr = """system: /etc/lsl_api/lsl_api.cfg or 
+                          C:\\etc\\lsl_api\\lsl_api.cfg on Windows.\r\n                          
+                 global: ~/lsl_api/lsl_api.cfg or
+                          C:\\Users\\username\\lsl_api\\lsl_api.cfg on Windows.
+                          
+                 local: lsl_api.cfg in the current working directory"""
+    parser_cfg.add_argument('scope', choices=["global", "system", "local"], 
+                            help=helpstr)
+    parser_cfg.add_argument('--default', action="store_true", 
+                            help="initializes a configuration from default")
     
     
     helpstr = """list available LSL streams"""
-    parser_cfg = subparsers.add_parser('list', help=helpstr)        
-    parser_cfg.add_argument('--field', help="which field to print", 
+    parser_list = subparsers.add_parser('list', help=helpstr)        
+    parser_list.add_argument('--field', help="which field to print", 
                             default="any")
     
 
     helpstr = """Visualize a specific LSL streams"""
-    parser_cfg = subparsers.add_parser('show', help=helpstr)    
-    parser_cfg.add_argument('--name', help="name of the stream")
-    parser_cfg.add_argument('--type', help="type of the stream")
-    parser_cfg.add_argument('--channel', help="which channel to visualize", type=int)
-    parser_cfg.add_argument('--backend', choices=["mpl", "textplot", "reizbar"],
+    parser_show = subparsers.add_parser('show', help=helpstr)    
+    parser_show.add_argument('--name', help="name of the stream")
+    parser_show.add_argument('--type', help="type of the stream")
+    parser_show.add_argument('--channel', help="which channel to visualize", type=int)
+    parser_show.add_argument('--backend', choices=["mpl", "textplot", "reizbar"],
                             default="mpl", help="what backend to use")
     
+    
     helpstr = """mock a LSL stream"""
-    parser_cfg = subparsers.add_parser('mock', help=helpstr)    
-    parser_cfg.add_argument('--name', help="name of the stream", 
+    parser_mock= subparsers.add_parser('mock', help=helpstr)    
+    parser_mock.add_argument('--name', help="name of the stream", 
                             default="Liesl-Mock")
-    parser_cfg.add_argument('--type', help="type of the stream",
+    parser_mock.add_argument('--type', help="type of the stream",
                             default="EEG")
-    parser_cfg.add_argument('--channel_count', help="number of channels",
+    parser_mock.add_argument('--channel_count', help="number of channels",
                             type=int, default=8)
     
     helpstr = """inspect an XDF file"""
-    parser_cfg = subparsers.add_parser('xdf', help=helpstr)    
-    parser_cfg.add_argument('filename', help="filename")
+    parser_xdf = subparsers.add_parser('xdf', help=helpstr)    
+    parser_xdf.add_argument('filename', help="filename")
     
-    return parser.parse_known_args()
+    return parser.parse_known_args(), parser
                    
 def main():
-    args, unknown = get_args()
+    (args, unknown), parser = get_args()
     #print(args)
     if args.subcommand == "xdf":
         from liesl.files.xdf.inspect_xdf import main
         main(args.filename)
         
     if args.subcommand == "config":
-       if args.init:
+       if args.default:
             from liesl.cli.lsl_api import init_lsl_api_cfg
-            if args.system:
-                init_lsl_api_cfg("system")
-            if args._global:
-                init_lsl_api_cfg("global")
-            if args.local:
-                init_lsl_api_cfg("local")
-       return
+            init_lsl_api_cfg(args.scope)
+       else:
+           parser.print_help()
+           return
    
     if args.subcommand == "show":        
         kwargs = vars(args)        
