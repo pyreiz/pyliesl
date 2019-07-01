@@ -139,7 +139,8 @@ def main(filename):
             y = s["time_series"][:,0]
             plot(y, x)
             print()
-        print(f"Overview finished for {filename:3}\n")
+   
+    print(f"Overview finished for {filename:3}\n")
             
 if __name__ == "__main__":
     #import sys
