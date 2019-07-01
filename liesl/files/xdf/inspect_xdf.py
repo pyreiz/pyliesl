@@ -125,7 +125,7 @@ def main(filename):
                 if key == "":
                     wrapped_key = '\"\"'
                 else:
-                    wrapped_key = textwrap.shorten(key, width=54, 
+                    wrapped_key = textwrap.shorten(key, width=70, 
                                                placeholder="...")
                 alignment = 80-len(wrapped_key)
                 print("{0}{1:>{align}}".format(wrapped_key, 
@@ -139,6 +139,7 @@ def main(filename):
             y = s["time_series"][:,0]
             plot(y, x)
             print()
+        print(f"Overview finished for {filename:3}\n")
             
 if __name__ == "__main__":
     #import sys
