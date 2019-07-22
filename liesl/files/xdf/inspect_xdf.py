@@ -88,27 +88,39 @@ def plot(y, x=None, width=80, height=10):
     
     
     bottom = ""
-    offset = len("%g" % a)
-    bottom += ("%g" % a).ljust(width//2 - offset)
-    bottom += ("%g" % ((a + b)/2)).ljust(width//2)
-    bottom += "%g" % b
+    bottom += "{:<{width}g}".format(a, width= (width//2)-3)
+    bottom += ("{:^5g}".format((a + b)/2)) #.ljust(width//2)
+    bottom += "{:>{width}g}".format(b, width= (width//2)-2)
     print(bottom)
     
+def shorten(text:str, width:int, placeholder="..."):
+    if len(text) <= width:
+        return text 
+    else:
+        return textwrap.wrap(text, width-len(placeholder))[0] + placeholder
+
 
 def main(filename):    
     streams, info = load_xdf(filename)
     hdr = "XDF Fileversion " + info["info"]["version"][0]
     print(f"\r\nLoading {filename:3}\n")
     print(f"{hdr:>80}\n")
-    line = "{0:<30s}{1:^7s}{2:^5s}{3:^5s}{4:>33s}"
-    print(line.format("Name","Type", "Chans", "Fs", "Source"))
+    line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
+    print(line.format("Name","Type", "Ch", "Fs", "Source"))
     print('-'*80)
-    for s in streams:   
+    for s in streams:           
         name = s["info"]["name"][0]
         typ = s["info"]["type"][0]  
-        cc = s["info"]["channel_count"][0]  
-        sid = s["info"]["source_id"][0]  
-        fs = s["info"]["nominal_srate"][0]
+        cc = s["info"]["channel_count"][0]          
+        fs = s["info"]["nominal_srate"][0]        
+        name = shorten(name, 25)
+        typ = shorten(typ, 20)        
+        try: 
+            sid = s["info"]["source_id"][0]  
+            sid = shorten(sid, 25)
+        except IndexError:
+            sid = '\"\"'
+        
         print(line.format(name, typ, cc, fs, sid))
     
     print("\n")
@@ -135,9 +147,13 @@ def main(filename):
         else:
             print(line.format(name, "Exemplary data"))
             print('-'*80)
-            x = s["time_stamps"]
-            y = s["time_series"][:,0]
-            plot(y, x)
+            sz = s["time_series"].shape
+            if sz[1]:
+                x = s["time_stamps"]
+                y = s["time_series"][:,0]
+                plot(y, x)
+            else:
+                print("No data found, array has shape({0}, {1})".format(*sz))
             print()
    
     print(f"Overview finished for {filename:3}\n")
