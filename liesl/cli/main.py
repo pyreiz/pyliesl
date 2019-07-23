@@ -18,14 +18,15 @@ def get_args():
     parser_cfg = subparsers.add_parser('config', help=helpstr)        
     helpstr = """system: /etc/lsl_api/lsl_api.cfg or 
                           C:\\etc\\lsl_api\\lsl_api.cfg on Windows.\r\n                          
-                 global: ~/lsl_api/lsl_api.cfg or
-                          C:\\Users\\username\\lsl_api\\lsl_api.cfg on Windows.
-                          
+                 user: ~/lsl_api/lsl_api.cfg or
+                          C:\\Users\\username\\lsl_api\\lsl_api.cfg on Windows.                         
                  local: lsl_api.cfg in the current working directory"""
-    parser_cfg.add_argument('scope', choices=["global", "system", "local"], 
+    parser_cfg.add_argument('scope', choices=["system", "user", "local"], 
                             help=helpstr)
     parser_cfg.add_argument('--default', action="store_true", 
                             help="initializes a configuration from default")
+    parser_cfg.add_argument('--sessionid', type=str, 
+                            help="sets the sessionid for this level")
     
     
     helpstr = """list available LSL streams"""
@@ -65,13 +66,23 @@ def main():
         from liesl.files.xdf.inspect_xdf import main
         main(args.filename)
         
-    if args.subcommand == "config":
-       if args.default:
-            from liesl.cli.lsl_api import init_lsl_api_cfg
+    if args.subcommand == "config":        
+        if args.default:
+            from liesl.cli.lsl_api import init_lsl_api_cfg    
             init_lsl_api_cfg(args.scope)
-       else:
-           parser.print_help()
-           return
+            return
+        
+        from liesl.cli.lsl_api import Ini
+        ini = Ini(args.scope)
+        ini.refresh()
+        if args.sessionid:
+            print(args.sessionid)            
+            ini.ini["lab"]["SessionID"] = args.sessionid
+            ini.write()
+
+        from liesl.cli.lsl_api import print_config
+        print_config(args.scope)       
+        return
    
     if args.subcommand == "show":        
         kwargs = vars(args)        
