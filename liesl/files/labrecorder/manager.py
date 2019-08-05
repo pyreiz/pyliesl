@@ -9,9 +9,24 @@ from pathlib import Path
 # %%
 def validate(streamargs):
     from liesl.streams.finder import get_source_id
-    sids = [get_source_id(**s) for s in streamargs]
-    if len({s["source_id"] for s in sids}) != len(streamargs):
-        raise ConnectionError("Some streams were selected multiple times")
+    sids = []
+    # use only dictionaries which are unique
+    _streamargs = set([tuple(s.items()) for s in streamargs])
+    
+    for _s in _streamargs:
+        s = dict(_s)
+        print("Looking for", s, end="")
+        try: 
+            sids.append(get_source_id(**s))
+            print(" found")
+        except TimeoutError:
+            print(" not found")
+            
+    if len(sids) < len(_streamargs):        
+        raise ConnectionError("Not all streams were found")
+    elif len({s["source_id"] for s in sids}) < len(_streamargs):
+        # the set contains unique source-ids
+        raise ConnectionError("Some streams were selected multiple times")    
     else:
         return sids
         

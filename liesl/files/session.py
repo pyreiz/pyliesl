@@ -8,14 +8,14 @@ class Session():
 
     Example::
 
-        # create a new folder for storing the session data
-        session = Session(r'C:\\projects\\recording','')
-        # populate the configuration
-        session.header.gender = 'F'
-        session.header.name = 'Paula_Unknown'
-        # dump all recordings to session-specific folder
-        session.dump()
-
+        streamargs = [{'name':"localite_marker", "hostname": localhostname},
+                      {'name':"reiz_marker_sa", "hostname": localhostname},
+                      {'name':"BrainVision RDA Markers", "hostname": localhostname},
+                      {'name':"BrainVision RDA", "hostname": localhostname}]
+        
+        session = Session(prefix="VvNn", 
+                          recorder=Recorder(path_to_cmd=r"~/Desktop/LabRecorder.lnk"),
+                          streamargs=streamargs)
     '''
     def __init__(self, 
                  prefix:str="VvNn",
@@ -27,11 +27,12 @@ class Session():
         self.mainfolder = Path(mainfolder).expanduser().absolute()
         self.folder = (self.mainfolder / self.prefix)
         self.folder.mkdir(exist_ok=True, parents=True)
-        if Recorder is None:
+        if recorder is None:
             raise ValueError("No recorder specified")
         else:
             self.recorder = recorder
         self.recorder.bind(streamargs)
+        
         
     def start_recording(self, task:str="recording"):        
         fname = self.folder / Path(task + ".xdf")
@@ -39,11 +40,11 @@ class Session():
         self.recorder.start_recording(fname)
         
     def stop_recording(self):
-        self.recorder.stop_recording()
+        self.recorder.stop_recording()   
     
     @contextmanager
     def __call__(self, task:str="recording"):
         self.start_recording(task)
         yield self
-        self.stop_recording()
+        self.stop_recording()        
     
