@@ -59,8 +59,8 @@ def get_args():
     
     return parser.parse_known_args(), parser
                    
-def main():
-    (args, unknown), parser = get_args()
+def start(args, unknown):
+   
     #print(args)
     if args.subcommand == "xdf":
         from liesl.files.xdf.inspect_xdf import main
@@ -132,5 +132,13 @@ def main():
         
         return
     
+def main():
+    import sys 
+    (args, unknown), parser = get_args()
+    start(args, unknown)
+    sys.exit()
+    
 if __name__ == '__main__':
+    
     get_args()
+    

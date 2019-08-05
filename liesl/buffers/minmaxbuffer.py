@@ -15,7 +15,7 @@ class MinMaxBuffer():
         self.chan = chan
         
     def get_level(self):
-        chunk = self.buffer.get()
+        chunk, tstamp = self.buffer.get()
         try:        
             data = chunk[:,self.chan] #.tolist()
             level = chunk[-self.current_slice:,:].mean()

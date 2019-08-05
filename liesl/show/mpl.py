@@ -23,6 +23,8 @@ def main(**kwargs):
     labels = []
     for chan in buffer.info['desc']['channels']['channel']:
         labels.append(chan['label'])
+    
+    
     fig, ax = plt.subplots(1,1)
     while plt.fignum_exists(fig.number):
         plt.pause(0.05)
@@ -30,9 +32,10 @@ def main(**kwargs):
         chunks, tstamp = buffer.get()
         if limit_channels:
             ax.plot(tstamp, chunks[:, channel])
+            ax.legend([labels[channel]], loc='upper left')
         else:
             ax.plot(tstamp, chunks)
-        ax.legend(labels, loc='upper left')
+            ax.legend(labels, loc='upper left')
     
 if __name__ == "__main__":
     stream = liesl.open_stream(type='Acc', hostname='TRAINER-001')
