@@ -2,9 +2,9 @@ from distutils.core import setup
 
 setup(
     name='LieSL',
-    version='0.0.1',
-    description='Toolbox to receive and process LSL streams.',
-    long_description='A Python Toolbox to receive and process labstreaminglayer streams',
+    version='0.0.2',
+    description='Toolbox to receive and process LSL streams and handle XDF files.',
+    long_description='A Python Toolbox to receive and process labstreaminglayer streams and handle XDF files',
     author='Robert Guggenberger',
     author_email='robert.guggenberger@uni-tuebingen.de',
     url='https://github.com/pyreiz/pyliesl',
