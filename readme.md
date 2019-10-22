@@ -46,9 +46,9 @@ optional arguments:
 From the terminal, run ```liesl config user --default``` to create a default configuratin
 file for lsl on the user level. (see
 https://github.com/sccn/labstreaminglayer/wiki/NetworkConnectivity#configuration-file-locations
-for more details). You can then change the session id with `liesl config
-user --sessionid test' and add the localhost to knownpeers `liesl config user
---knownpeers 127.0.0.1`  Afterwards, lsl config user returns 
+for more details). You can then change the session id with `liesl config user --sessionid test` 
+and add the localhost to knownpeers `liesl config user --knownpeers 127.0.0.1`.
+Afterwards, lsl config user returns 
 ```
 'lab': {'KnownPeers': '{127.0.0.1}', 'SessionID': 'test'},
  'multicast': {'AddressesOverride': '{}',
@@ -110,6 +110,7 @@ now sending data...
 ```
 
 You can also start a mock marker stream with  `liesl mock --type Marker`.
+
 ---
 ### liesl list
 ```
@@ -122,7 +123,7 @@ optional arguments:
 ###### Example
 From the terminal, first start a mock stream with `liesl mock --type EEG`. In a
 second terminal, run `liesl list` to return 
-
+```
 <?xml version="1.0"?>
 <info>
 	<name>Liesl-Mock</name>
@@ -151,7 +152,6 @@ which would only return
 8746345783361
 ```
 
-
 ---
 ### liesl xdf
 ```
@@ -163,6 +163,7 @@ positional arguments:
 optional arguments:
   -h, --help  show this help message and exit
 ```
+
 ###### Example
 From the terminal, run `git clone https://github.com/xdf-modules/example-files.git` to
 download the example files from the xdf repository. Then, `cd example-files`,
@@ -202,6 +203,7 @@ LSL                                                                            2
 
 Overview finished for minimal.xdf
 ```
+
 ### Caveat
 This should not be considered a stable repository, and i currently am 
 tweaking a lot to fit specific needs.
