@@ -5,21 +5,20 @@ is a repository adding several convenient tools to LSL
 
 These are accessible through the terminal, e.g. 
 ```{bash}
-usage: liesl [-h] {config,list,show,mock} ...
+usage: liesl [-h] {config,list,show,mock,xdf} ...
 
 positional arguments:
-  {config,list,show,mock, xdf}
+  {config,list,show,mock,xdf}
     config              initialize the lsl_api.cfg for all users with system,
                         globally for this user with global or locally in this
                         folder with local
     list                list available LSL streams
     show                Visualize a specific LSL streams
     mock                mock a LSL stream
-    xdf                 inspect an xdf file from the command line
+    xdf                 inspect an XDF file
 
 optional arguments:
   -h, --help            show this help message and exit
-
 ```
 
 ### liesl config
