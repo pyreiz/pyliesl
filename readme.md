@@ -104,15 +104,7 @@ from                                                                           2
 LSL                                                                            2
 
 Overview finished for minimal.xdf
-
-
-
-
-
-
+```
 ### Caveat
 This should not be considered a stable repository, and i currently am 
 tweaking a lot to fit specific needs.
-
-
-
