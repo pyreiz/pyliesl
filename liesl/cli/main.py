@@ -43,7 +43,7 @@ def get_args():
     parser_show.add_argument(
         '--channel', help="which channel to visualize", type=int)
     parser_show.add_argument('--backend', choices=["mpl", "textplot", "reizbar"],
-                             default="mpl", help="what backend to use")
+                             default="textplot", help="what backend to use")
 
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser('mock', help=helpstr)
@@ -93,14 +93,15 @@ def start(args, unknown):
 
     if args.subcommand == "show":
         kwargs = vars(args)
-
-        if args.backend == "textplot":
-            from liesl.show.textplot import main
-            kwargs["channel"] = kwargs.get("channel", 0)
+        kwargs["channel"] = kwargs.get("channel", 0)
+        if args.backend == "mpl":
+            from liesl.show.mpl import main
         elif args.backend == "reizbar":
             from liesl.show.reiz_bar import main
-        else:
-            from liesl.show.mpl import main
+        elif args.backend ==  "textplot":
+            from liesl.show.textplot import main
+        else: 
+            raise ValueError(f"Backend {args.backend} not available")
 
         del kwargs["backend"]
         del kwargs["subcommand"]

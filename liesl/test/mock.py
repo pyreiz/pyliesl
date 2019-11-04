@@ -12,6 +12,7 @@ from random import random as rand
 from random import choice
 from pylsl import StreamInfo, StreamOutlet, local_clock
 import threading
+from math import sin, pi
 # %%
 class Mock(threading.Thread):
     
@@ -31,6 +32,16 @@ class Mock(threading.Thread):
                            channel_format, source_id)        
         self.channel_count = channel_count
         self.samplestep = 1/nominal_srate
+       
+        channels = self.info.desc().append_child("channels")
+        types = (f"MockEEG" for x in range(1, channel_count,1))
+        units = ("au" for x in range(1,channel_count,1))
+        names = (f"C{x:03d}" for x in range(1,channel_count,1))
+        for c, u, t in zip(names, units, types):
+                    channels.append_child("channel") \
+                    .append_child_value("label", c) \
+                    .append_child_value("unit", u) \
+                    .append_child_value("type", t)   
     
     def stop(self):
         self.is_running = False
@@ -41,10 +52,20 @@ class Mock(threading.Thread):
         self.is_running = True
         print("now sending data...")
         outlet = StreamOutlet(self.info)
+        count = 0.
         while self.is_running:
             # make a new random 8-channel sample; this is converted into a
             # pylsl.vectorf (the data type that is expected by push_sample)
-            mysample = [rand() for c in range(self.channel_count)]
+            # mysample = [rand() for c in range(self.channel_count)]
+            mysample = []
+            
+            for c in range(self.channel_count):
+                if c == 0:
+                    mysample.append(rand())
+                else:
+                    smpl = sin((c**2)*2*pi*count*self.samplestep)
+                    mysample.append(smpl)
+            count += 1.
             # now send it and wait for a bit
             outlet.push_sample(mysample)
             time.sleep(self.samplestep)

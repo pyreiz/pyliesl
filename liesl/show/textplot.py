@@ -20,12 +20,12 @@ def linspace(a, b, n=80):
     diff = (float(b) - a)/(n - 1)
     return [int(diff * i + a) for i in range(n)]
     
-def plot(y, x=None, width=80, height=18):
+def plot(y, x=None, width=79, height=18):
     """
     Print a crude ASCII art plot
     """
     y_raw = y.copy()    
-    
+    width -= 6 # because of left margin
     if x is None:
         x_raw = [x for x in range(len(y))]
     else:
@@ -52,9 +52,7 @@ def plot(y, x=None, width=80, height=18):
     for ix in x:
         new_y = int(float(height)*(y_raw[ix] - mi)/(ma - mi))
         y.append(new_y) 
-        
-    margin = max(len(f'{mi}'), len(f'{ma}')) # space left for y-labels
-    
+            
     for h in range(height - 1, -1, -1):
         s = [' '] * width
         for x in range(width):
@@ -68,20 +66,20 @@ def plot(y, x=None, width=80, height=18):
 
         # Print y values
         if h == height - 1:
-            prefix = ("%g" % ma).rjust(margin)[:margin]
+            prefix = ("{0:4.1f}".format(ma))
         elif h == height//2:
-            prefix = ("%g" % ((mi + ma)/2)).rjust(margin)[:margin]
+            prefix = ("{0:4.1f}".format((mi + ma)/2))
         elif h == 0:
-            prefix = ("%g" % mi).rjust(margin)[:margin]
+            prefix = ("{0:4.1f}".format(mi))
         else:
-            prefix = " "*margin
+            prefix = " "*4
         s = "".join(s)
         if h == height//2:
             s = s.replace(" ", "-")
         print(prefix + " | " + s)
 
     # Print x values
-    bottom = " " * (margin + 3)
+    bottom = " " * 4
     offset = len("%g" % a)
     bottom += ("%g" % a).ljust(width//2 - offset)
     bottom += ("%g" % ((a + b)/2)).ljust(width//2)

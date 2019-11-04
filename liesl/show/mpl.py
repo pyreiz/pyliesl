@@ -21,8 +21,15 @@ def main(**kwargs):
     buffer.start()
     buffer.await_running()
     labels = []
-    for chan in buffer.info['desc']['channels']['channel']:
-        labels.append(chan['label'])
+    try:
+        for cix, chan in enumerate(buffer.info['desc']['channels']['channel']):
+            if chan['label'] is not None:
+                labels.append(chan['label'])
+            else:
+                labels.append(str(cix)) 
+    except:
+        for cix in range(int(buffer.info["channel_count"])):
+            labels.append(str(cix)) 
     
     
     fig, ax = plt.subplots(1,1)
