@@ -4,7 +4,7 @@ is a repository with several convenient tools to manage and test LSL (<https://p
 
 These are accessible through the terminal, e.g.
 
-```{bash}
+```
 usage: liesl [-h] {config,list,show,mock,xdf} ...
 
 positional arguments:
@@ -25,7 +25,7 @@ optional arguments:
 
 From the terminal,
 
-```
+```bash
 git clone https://github.com/pyreiz/pyliesl.git
 cd pyliesl
 pip install -r requirements.txt
@@ -60,7 +60,7 @@ optional arguments:
 
 From the terminal, run `liesl config user --default` to create a default configuratin file for lsl on the user level. (see <https://github.com/sccn/labstreaminglayer/wiki/NetworkConnectivity#configuration-file-locations> for more details). You can then change the session id with `liesl config user --sessionid test` and add the localhost to knownpeers `liesl config user --knownpeers 127.0.0.1`. Afterwards, lsl config user returns
 
-```
+```javascript
 'lab': {'KnownPeers': '{127.0.0.1}', 'SessionID': 'test'},
  'multicast': {'AddressesOverride': '{}',
                'GlobalAddresses': '{}',
@@ -99,7 +99,7 @@ optional arguments:
 
 From the terminal, run `liesl mock` to create the default EEG stream with 8 channels and sampling rate of 100 Hz (similar to <https://github.com/labstreaminglayer/liblsl-Python/blob/master/pylsl/examples/SendData.py>)
 
-```bash
+```xml
 <info>
     <name>Liesl-Mock</name>
     <type>EEG</type>
@@ -167,7 +167,7 @@ You can also start a mock marker stream with `liesl mock --type Marker`.
 
 ## liesl show
 
-```bash
+```
 usage: liesl show [-h] [--name NAME] [--type TYPE] [--channel CHANNEL]
                   [--backend {mpl,textplot,reizbar}]
 
@@ -184,7 +184,7 @@ optional arguments:
 
 After starting a mock stream with `liesl mock`, you can visualize it in another terminal with e.g. `liesl show --channel 1`, returning
 
-```bash
+```
 +1.0 |         ...... ......                                                    
      |      ...             ...                                                 
      |   ...                   ...                                              
@@ -218,7 +218,7 @@ optional arguments: -h, --help show this help message and exit --field FIELD whi
 
 From the terminal, first start a mock stream with `liesl mock --type EEG`. In a second terminal, run `liesl list` to return
 
-```
+```xml
 <?xml version="1.0"?>
 
 <info><name>Liesl-Mock</name>
@@ -263,7 +263,7 @@ optional arguments: -h, --help show this help message and exit
 
 From the terminal, run `git clone https://github.com/xdf-modules/example-files.git` to download the example files from the xdf repository. Then, `cd example-files`, and run `liesl xdf minimal.xdf` to receive the following printout
 
-```{bash}
+```
 Loading minimal.xdf
 
                                                              XDF Fileversion 1.0
