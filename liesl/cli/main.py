@@ -57,8 +57,8 @@ def get_args():
     helpstr = """inspect an XDF file"""
     parser_xdf = subparsers.add_parser('xdf', help=helpstr)
     parser_xdf.add_argument('filename', help="filename")
-    parser_xdf.add_argument('--concise', action='store_true',
-                            help="show only very concise information. Useful for example if file is very large.")
+    parser_xdf.add_argument('--at-most', type=int,
+                            help="only peek into the file, looking for at most N streaminfos. If searching takes too long, returns after a certain time anyways. Useful for example if file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file")
 
     return parser.parse_known_args(), parser
 
@@ -67,12 +67,12 @@ def start(args, unknown):
 
     # print(args)
     if args.subcommand == "xdf":
-        if not args.concise:
+        if not args.at_most:
             from liesl.files.xdf.inspect_xdf import main as print_xdf
+            print_xdf(args.filename)
         else:
             from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
-
-        print_xdf(args.filename)
+            print_xdf(args.filename, args.at_most)
 
     if args.subcommand == "config":
         if args.default:

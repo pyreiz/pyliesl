@@ -34,7 +34,7 @@ pip install -e .
 
 after these steps, the command line interface should be detectable from your path.
 
---------------------------------------------------------------------------------
+---
 
 ## liesl config
 
@@ -79,7 +79,7 @@ From the terminal, run `liesl config user --default` to create a default configu
            'PortRange': '32'}}
 ```
 
---------------------------------------------------------------------------------
+---
 
 ## liesl mock
 
@@ -185,24 +185,24 @@ optional arguments:
 After starting a mock stream with `liesl mock`, you can visualize it in another terminal with e.g. `liesl show --channel 1`, returning
 
 ```
-+1.0 |         ...... ......                                                    
-     |      ...             ...                                                 
-     |   ...                   ...                                              
-     | ..                         ..                                            
-     |                              ..                                          
-     |                                \                                         
-     |                                 ..                                       
-     |                                   ..                                     
++1.0 |         ...... ......
+     |      ...             ...
+     |   ...                   ...
+     | ..                         ..
+     |                              ..
+     |                                \
+     |                                 ..
+     |                                   ..
  0.0 | ------------------------------------..-----------------------------------
-     |                                       \                                  
-     |                                        ..                                
-     |                                          \                               
-     |                                           ..                             
-     |                                             ..                           
+     |                                       \
+     |                                        ..
+     |                                          \
+     |                                           ..
+     |                                             ..
      |                                               ..                        /
-     |                                                 ...                   .. 
-     |                                                    ..              ...   
--1.0 |                                                      ..............      
+     |                                                 ...                   ..
+     |                                                    ..              ...
+-1.0 |                                                      ..............
     27889.5                      27889.9                             27890.3
 ```
 
@@ -246,17 +246,24 @@ You can limit the report e.g. to the source_id by `liesl list --field source_id`
 8746345783361
 ```
 
---------------------------------------------------------------------------------
+---
 
 ### liesl xdf
 
 ```
-usage: liesl xdf [-h] filename
+usage: liesl xdf [-h] [--at-most AT_MOST] filename
 
-positional arguments: filename filename
+positional arguments:
+  filename           filename
 
-optional arguments: -h, --help show this help message and exit
-`
+optional arguments:
+  -h, --help         show this help message and exit
+  --at-most AT_MOST  only peek into the file, looking for at most N
+                     streaminfos. If searching takes too long, returns after a
+                     certain time anyways. Useful for example if file is very
+                     large, and you are sure you started recording all streams
+                     at the beginnging, as this prevents parsing the whole
+                     file
 ```
 
 #### Example
@@ -276,15 +283,15 @@ SendDataString               StringMarker    1    10                          ""
 
 SendDataC                                                         Exemplary data
 --------------------------------------------------------------------------------
-─────────╮                                                                      
-         │                                                                      
-         │                                                                      
-         │                                                                      
-         │                                                                      
-         │                                                                      
-         │                                                                      
-         │                                                                      
-         │                                                                      
+─────────╮
+         │
+         │
+         │
+         │
+         │
+         │
+         │
+         │
          ╰──────────────────────────────────────────────────────────────────────
 5                                     5.4                                    5.8
 
