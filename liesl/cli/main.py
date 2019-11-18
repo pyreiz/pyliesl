@@ -16,6 +16,7 @@ def get_args():
                 globally for this user with global or
                 locally in this folder with local"""
 
+    # --------------------------------------------------------------------------
     parser_cfg = subparsers.add_parser('config', help=helpstr)
     helpstr = """system: /etc/lsl_api/lsl_api.cfg or
                           C:\\etc\\lsl_api\\lsl_api.cfg on Windows.\r\n
@@ -31,20 +32,25 @@ def get_args():
     parser_cfg.add_argument('--knownpeers', type=str,
                             help="set knownpeers for this level")
 
+    # -------------------------------------------------------------------------
     helpstr = """list available LSL streams"""
     parser_list = subparsers.add_parser('list', help=helpstr)
     parser_list.add_argument('--field', help="which field to print",
                              default="any")
 
+    # -------------------------------------------------------------------------
     helpstr = """Visualize a specific LSL streams"""
     parser_show = subparsers.add_parser('show', help=helpstr)
     parser_show.add_argument('--name', help="name of the stream")
     parser_show.add_argument('--type', help="type of the stream")
     parser_show.add_argument(
         '--channel', help="which channel to visualize", type=int)
-    parser_show.add_argument('--backend', choices=["mpl", "textplot", "reizbar"],
-                             default="textplot", help="what backend to use")
+    parser_show.add_argument('--backend', choices=["mpl", "ascii"],
+                             default="ascii", help="what backend to use")
+    parser_show.add_argument('--frate', type=float,
+                             default=20, help="at which frequency the plot will be updated")
 
+    # -------------------------------------------------------------------------
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser('mock', help=helpstr)
     parser_mock.add_argument('--name', help="name of the stream",
@@ -54,6 +60,7 @@ def get_args():
     parser_mock.add_argument('--channel_count', help="number of channels",
                              type=int, default=8)
 
+    # -------------------------------------------------------------------------
     helpstr = """inspect an XDF file"""
     parser_xdf = subparsers.add_parser('xdf', help=helpstr)
     parser_xdf.add_argument('filename', help="filename")
@@ -102,9 +109,7 @@ def start(args, unknown):
         kwargs["channel"] = kwargs.get("channel", 0)
         if args.backend == "mpl":
             from liesl.show.mpl import main
-        elif args.backend == "reizbar":
-            from liesl.show.reiz_bar import main
-        elif args.backend == "textplot":
+        elif args.backend == "ascii":
             from liesl.show.textplot import main
         else:
             raise ValueError(f"Backend {args.backend} not available")
