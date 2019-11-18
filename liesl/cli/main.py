@@ -57,6 +57,8 @@ def get_args():
     helpstr = """inspect an XDF file"""
     parser_xdf = subparsers.add_parser('xdf', help=helpstr)
     parser_xdf.add_argument('filename', help="filename")
+    parser_xdf.add_argument('--concise', action='store_true',
+                            help="show only very concise information. Useful for example if file is very large.")
 
     return parser.parse_known_args(), parser
 
@@ -65,8 +67,12 @@ def start(args, unknown):
 
     # print(args)
     if args.subcommand == "xdf":
-        from liesl.files.xdf.inspect_xdf import main
-        main(args.filename)
+        if not args.concise:
+            from liesl.files.xdf.inspect_xdf import main as print_xdf
+        else:
+            from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
+
+        print_xdf(args.filename)
 
     if args.subcommand == "config":
         if args.default:
@@ -98,9 +104,9 @@ def start(args, unknown):
             from liesl.show.mpl import main
         elif args.backend == "reizbar":
             from liesl.show.reiz_bar import main
-        elif args.backend ==  "textplot":
+        elif args.backend == "textplot":
             from liesl.show.textplot import main
-        else: 
+        else:
             raise ValueError(f"Backend {args.backend} not available")
 
         del kwargs["backend"]
