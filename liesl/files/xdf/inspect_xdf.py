@@ -18,36 +18,48 @@ def peek(filename: str, timeout: float = 5, maxcount: int = 10) -> List[Dict]:
     Find the first `maxcount` streaminfos in the xdf-file as you can, but do not search for longer than `timeout` seconds, whatever comes first.
     """
     from pyxdf.pyxdf import _read_varlen_int, parse_chunks, open_xdf
-    from pyxdf.pyxdf import _parse_streamheader
+    from pyxdf.pyxdf import _parse_streamheader, _scan_forward
     import struct
     import xml.etree.ElementTree as ET
     from math import inf
     from itertools import islice
     import time
 
-    def _read_chunks(f, timeout=10):
+    def _read_sinfo_chunks(f, timeout=10):
         t0 = time.time()
         while True:
+            if time.time()-t0 > timeout:
+                return
             chunk = dict()
             try:
                 chunk["nbytes"] = _read_varlen_int(f)
             except EOFError:
                 return
-            chunk["tag"] = struct.unpack('<H', f.read(2))[0]
-            if chunk["tag"] == 2:
+            except Exception:
+                _scan_forward(f)
+                continue
+
+            try:
+                chunk["tag"] = struct.unpack('<H', f.read(2))[0]
+            except Exception:
+                _scan_forward(f)
+                continue
+
+            if chunk["tag"] in [2, 3, 4, 6]:
                 chunk["stream_id"] = struct.unpack("<I", f.read(4))[0]
-                xml = ET.fromstring(f.read(chunk["nbytes"] - 6).decode())
-                chunk = {**chunk, **_parse_streamheader(xml)}
-                yield chunk
+                if chunk["tag"] == 2:  # parse StreamHeader chunk
+                    xml = ET.fromstring(f.read(chunk["nbytes"] - 6).decode())
+                    chunk = {**chunk, **_parse_streamheader(xml)}
+                    yield chunk
+                else:  # skip remaining chunk contents
+                    f.seek(chunk["nbytes"] - 6, 1)
             else:
                 f.seek(chunk["nbytes"] - 2, 1)  # skip remaining chunk contents
-            if time.time()-t0 > timeout:
-                return
 
     chunks = []
     with open_xdf(filename) as f:
         for chunk in islice(
-                _read_chunks(f, timeout=timeout), maxcount):
+                _read_sinfo_chunks(f, timeout=timeout), maxcount):
             chunks.append(chunk)
     return parse_chunks(chunks)
 

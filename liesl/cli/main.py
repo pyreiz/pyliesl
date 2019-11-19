@@ -79,6 +79,8 @@ def start(args, unknown):
     if args.subcommand == "xdf":
         if args.count or args.timeout:
             from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
+            print("Will search {0:3.2f} seconds to find at most {1:2.0f} streaminfos".format(
+                args.timeout, args.count))
             print_xdf(args.filename, timeout=args.timeout, maxcount=args.count)
         else:
             from liesl.files.xdf.inspect_xdf import main as print_xdf
