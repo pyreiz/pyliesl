@@ -12,10 +12,10 @@ def shorten(text: str, width: int, placeholder="..."):
         return textwrap.wrap(text, width-len(placeholder))[0] + placeholder
 
 
-def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
+def peek(filename: str, timeout: float = 5, maxcount: int = 10) -> List[Dict]:
     """peek into an xdf-file
 
-    Find the first `at_most` N streaminfos of the xdf-file but do not search for longer that `max duration` seconds, whatever comes first.
+    Find the first `maxcount` streaminfos in the xdf-file as you can, but do not search for longer than `timeout` seconds, whatever comes first.
     """
     from pyxdf.pyxdf import _read_varlen_int, parse_chunks, open_xdf
     from pyxdf.pyxdf import _parse_streamheader
@@ -25,7 +25,7 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
     from itertools import islice
     import time
 
-    def _read_chunks(f, max_duration=10):
+    def _read_chunks(f, timeout=10):
         t0 = time.time()
         while True:
             chunk = dict()
@@ -41,23 +41,23 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
                 yield chunk
             else:
                 f.seek(chunk["nbytes"] - 2, 1)  # skip remaining chunk contents
-            if time.time()-t0 > max_duration:
+            if time.time()-t0 > timeout:
                 return
 
     chunks = []
     with open_xdf(filename) as f:
         for chunk in islice(
-                _read_chunks(f, max_duration=max_duration), at_most):
+                _read_chunks(f, timeout=timeout), maxcount):
             chunks.append(chunk)
     return parse_chunks(chunks)
 
 
-def load_concise(filename: str, at_most=1):
+def load_concise(filename: str, timeout: float = 5, maxcount: int = 10):
     print(f"\r\nLoading {filename:3}\n")
     line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
     print(line.format("Name", "Type", "Ch", "Fs", "Source"))
     print('-'*80)
-    sinfos = peek(filename, at_most=at_most)
+    sinfos = peek(filename, timeout=timeout, maxcount=maxcount)
     for sinfo in sinfos:
         name = sinfo["name"]
         typ = sinfo["type"]

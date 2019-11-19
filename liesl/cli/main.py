@@ -64,8 +64,10 @@ def get_args():
     helpstr = """inspect an XDF file"""
     parser_xdf = subparsers.add_parser('xdf', help=helpstr)
     parser_xdf.add_argument('filename', help="filename")
-    parser_xdf.add_argument('--at-most', type=int,
-                            help="only peek into the file, looking for at most N streaminfos. If searching takes too long, returns after a certain time anyways. Useful for example if file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file")
+    parser_xdf.add_argument('--count', type=int,
+                            help="only peek into the file, looking for at most N streaminfos.")
+    parser_xdf.add_argument('--timeout', type=float,
+                            help="If searching takes too long, returns after timeout in seconds anyways. Useful for example if file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file")
 
     return parser.parse_known_args(), parser
 
@@ -73,14 +75,16 @@ def get_args():
 def start(args, unknown):
 
     # print(args)
+    # -------------------------------------------------------------------------
     if args.subcommand == "xdf":
-        if not args.at_most:
+        if args.count or args.timeout:
+            from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
+            print_xdf(args.filename, timeout=args.timeout, maxcount=args.count)
+        else:
             from liesl.files.xdf.inspect_xdf import main as print_xdf
             print_xdf(args.filename)
-        else:
-            from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
-            print_xdf(args.filename, args.at_most)
 
+    # -------------------------------------------------------------------------
     if args.subcommand == "config":
         if args.default:
             from liesl.cli.lsl_api import init_lsl_api_cfg
@@ -104,6 +108,7 @@ def start(args, unknown):
         print_config(args.scope)
         return
 
+    # -------------------------------------------------------------------------
     if args.subcommand == "show":
         kwargs = vars(args)
         kwargs["channel"] = kwargs.get("channel", 0)
@@ -123,6 +128,7 @@ def start(args, unknown):
         main(**arguments)
         return
 
+    # -------------------------------------------------------------------------
     if args.subcommand == "mock":
 
         if "marker" in args.type.lower():
@@ -138,7 +144,7 @@ def start(args, unknown):
         print(m)
         m.start()
         return
-
+    # -------------------------------------------------------------------------
     if args.subcommand == "list":
 
         from liesl.streams.finder import available_streams
@@ -150,6 +156,7 @@ def start(args, unknown):
                 print(getattr(a, args.field)())
 
         return
+    # -------------------------------------------------------------------------
 
 
 def main():
