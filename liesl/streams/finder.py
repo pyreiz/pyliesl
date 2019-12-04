@@ -134,8 +134,6 @@ def get_streaminfos_matching(**kwargs) -> List[StreamInfo]:
     # either throws a timepout, returns a streaminfo or a list of streaminfos
     if len(fitting_streams) == 0:
         return None
-    elif len(fitting_streams) == 1:
-        return fitting_streams[0]
     else:
         return fitting_streams
 
