@@ -46,6 +46,7 @@ extensions = [
     "sphinx_autodoc_typehints",  # : pip install sphinx-autodoc-typehints
     "sphinx_rtd_theme",
 ]
+master_doc = "index"
 autodoc_mock_imports = ["pylsl"]
 # Add any paths that contain templates here, relative to this directory.
 autosummary_generate = True
