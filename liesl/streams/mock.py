@@ -38,9 +38,9 @@ class Mock(threading.Thread):
         self.samplestep = 1 / nominal_srate
 
         channels = self.info.desc().append_child("channels")
-        types = (f"MockEEG" for x in range(1, channel_count, 1))
-        units = ("au" for x in range(1, channel_count, 1))
-        names = (f"C{x:03d}" for x in range(1, channel_count, 1))
+        types = (f"MockEEG" for x in range(1, channel_count + 1, 1))
+        units = ("au" for x in range(1, channel_count + 1, 1))
+        names = (f"C{x:03d}" for x in range(1, channel_count + 1, 1))
         for c, u, t in zip(names, units, types):
             channels.append_child("channel").append_child_value(
                 "label", c

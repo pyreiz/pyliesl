@@ -8,7 +8,6 @@ import pylsl
 from pylsl import StreamInlet, StreamInfo
 from functools import wraps
 from typing import Dict, List
-from liesl.tools.convert import xml_to_dict
 
 # %%
 def recover_info(stream: StreamInlet) -> StreamInfo:

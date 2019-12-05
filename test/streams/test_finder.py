@@ -23,7 +23,7 @@ def test_open_streams(markermock, mock):
     assert stream.info().name() == sinfo.name()
 
 
-def test_open_streams_fringe_cases(markermock, mock):
+def test_open_streams_border_cases(markermock, mock):
     assert liesl.open_stream(name="notexistent") == None
     assert liesl.open_streaminfo(name="notexistent") == None
     with pytest.raises(ConnectionError):
