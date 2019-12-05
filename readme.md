@@ -1,8 +1,8 @@
-[![status](https://github.com/pyreiz/pyliesl/workflows/pytest/badge.svg)](https://github.com/pyreiz/pyliesl/actions)
-
 # LieSL
 
-is a repository with several convenient tools to manage and test LSL (<https://pypi.org/project/pylsl/>) and to inspect xdf files.
+[![status](https://github.com/pyreiz/pyliesl/workflows/pytest/badge.svg)](https://github.com/pyreiz/pyliesl/actions) [![Documentation Status](https://readthedocs.org/projects/pyliesl/badge/?version=latest)](https://pyliesl.readthedocs.io/en/latest/?badge=latest) [![Coverage Status](https://coveralls.io/repos/github/pyreiz/pyliesl/badge.svg?branch=develop)](https://coveralls.io/github/pyreiz/pyliesl?branch=develop)
+
+LieSL is a set of convenient tools to manage [LSL streams](https://labstreaminglayer.readthedocs.io/) and [xdf files](https://github.com/sccn/xdf/wiki/Specifications).
 
 These are accessible through the terminal, e.g.
 
