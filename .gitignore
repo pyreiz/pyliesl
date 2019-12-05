@@ -9,3 +9,5 @@ build/*
 dist/*
 .coverage
 htmlcov/*
+doc/build/*
+doc/source/_autosummary/*

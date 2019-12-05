@@ -4,4 +4,5 @@ def get_localhostname():
     return socket.gethostname()
 
 
+localhostname: str  #: the localhosts name
 localhostname = get_localhostname()

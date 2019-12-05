@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Parse lsl xml and return a dictionary
-Robert Guggenberger
+Convert streams
+---------------
 """
 from liesl.streams._xmltodict import parse as xml_to_dict
 from typing import Dict

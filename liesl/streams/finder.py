@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Nov  6 13:35:12 2018
-
-Robert Guggenberger
+Find and open streams
+---------------------
 """
 import pylsl
 from pylsl import StreamInlet, StreamInfo
@@ -11,7 +10,7 @@ from typing import Dict, List
 
 # %%
 def recover_info(stream: StreamInlet) -> StreamInfo:
-    "takes a StreamInlet and recovers the basic info"
+    "takes a StreamInlet and casts it into a StreamInfo"
     info = stream.info()
     return pylsl.StreamInfo(
         name=info.name(),
@@ -24,7 +23,7 @@ def recover_info(stream: StreamInlet) -> StreamInfo:
 
 
 def print_available_streams():
-    "print all available streams in their xml form"
+    "prints all available streams in their xml form"
     available_streams = pylsl.resolve_streams()
     for a in available_streams:
         print(a.as_xml())
@@ -91,7 +90,7 @@ def get_streams_matching(**kwargs) -> List[StreamInlet]:
         
     returns
     -------
-    varies: List[StreamInlet]
+    streams: List[StreamInlet]
         a list of StreamInlets matching the kwargs
     
     """
@@ -114,7 +113,7 @@ def get_streaminfos_matching(**kwargs) -> List[StreamInfo]:
         
     returns
     -------
-    varies: List[StreamInfo]
+    sinfos: List[StreamInfo]
         a list of StreamInfo matching the kwargs
     
     """
