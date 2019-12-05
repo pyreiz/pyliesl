@@ -1,3 +1,2 @@
 m2r
 sphinx_autodoc_typehints
-git+https://github.com/labstreaminglayer/liblsl-Python.git
