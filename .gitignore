@@ -4,3 +4,6 @@
 *mypy*
 .pytest/*
 .vscode/*
+.test/*
+build/*
+dist/*
