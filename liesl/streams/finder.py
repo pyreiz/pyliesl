@@ -49,7 +49,7 @@ def open_stream(**kwargs) -> StreamInlet:
     
     """
     infos = get_streaminfos_matching(**kwargs)
-    if len(infos) == 0:
+    if infos is None:
         return None
     elif len(infos) > 1:
         raise ConnectionError("Found too many streaminfos")
@@ -75,7 +75,7 @@ def open_streaminfo(**kwargs) -> StreamInfo:
     
     """
     infos = get_streaminfos_matching(**kwargs)
-    if len(infos) == 0:
+    if infos is None:
         return None
     elif len(infos) > 1:
         raise ConnectionError("Found too many streaminfos")
@@ -97,12 +97,12 @@ def get_streams_matching(**kwargs) -> List[StreamInlet]:
     
     """
     infos = get_streaminfos_matching(**kwargs)
-    streams = []
-    for info in infos:
-        streams.append(pylsl.StreamInlet(info))
-    if len(streams) == 0:
+    if infos is None:
         return None
     else:
+        streams = []
+        for info in infos:
+            streams.append(pylsl.StreamInlet(info))
         return streams
 
 

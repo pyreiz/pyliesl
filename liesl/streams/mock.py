@@ -18,7 +18,7 @@ from math import sin, pi
 class Mock(threading.Thread):
     def __init__(
         self,
-        name="MockEEG",
+        name="Liesl-Mock-EEG",
         type="EEG",
         channel_count=8,
         nominal_srate=100,
@@ -81,7 +81,7 @@ class Mock(threading.Thread):
 class MarkerMock(Mock):
     def __init__(
         self,
-        name="MockMarker",
+        name="Liesl-Mock-Marker",
         type="Marker",
         channel_count=1,
         nominal_srate=0,

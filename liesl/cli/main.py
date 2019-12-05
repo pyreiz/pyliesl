@@ -64,11 +64,7 @@ def get_args():
     # -------------------------------------------------------------------------
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser("mock", help=helpstr)
-    parser_mock.add_argument("--name", help="name of the stream", default="Liesl-Mock")
     parser_mock.add_argument("--type", help="type of the stream", default="EEG")
-    parser_mock.add_argument(
-        "--channel_count", help="number of channels", type=int, default=8
-    )
 
     # -------------------------------------------------------------------------
     helpstr = """inspect an XDF file"""
@@ -146,26 +142,20 @@ def start(args, unknown):
         if "marker" in args.type.lower():
             from liesl.streams.mock import MarkerMock
 
-            m = MarkerMock(name=args.name, type=args.type,)
+            m = MarkerMock()
         else:
             from liesl.streams.mock import Mock
 
-            m = Mock(name=args.name, type=args.type, channel_count=args.channel_count)
+            m = Mock()
         print(m)
         m.start()
         return
 
     if args.subcommand == "list":
 
-        from liesl.streams.finder import available_streams
+        from liesl.streams.finder import print_available_streams
 
-        if args.field == "any":
-            available_streams()
-        else:
-            streams = available_streams(do_print=False)
-            for a in streams:
-                print(getattr(a, args.field)())
-
+        print_available_streams()
         return
 
 
