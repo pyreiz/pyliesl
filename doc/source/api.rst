@@ -3,7 +3,7 @@ liesl API
 
 The main API can be accessed directly from liesl, e.g.
 
-.. code-block::
+.. code-block:: python
 
     import liesl
     stream = liesl.open_stream(name="Liesl-Mock-EEG")
