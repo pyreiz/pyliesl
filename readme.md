@@ -1,3 +1,5 @@
+[![status](https://github.com/pyreiz/pyliesl/workflows/pytest/badge.svg)](https://github.com/pyreiz/pyliesl/actions)
+
 # LieSL
 
 is a repository with several convenient tools to manage and test LSL (<https://pypi.org/project/pylsl/>) and to inspect xdf files.
@@ -34,7 +36,7 @@ pip install -e .
 
 after these steps, the command line interface should be detectable from your path.
 
----
+--------------------------------------------------------------------------------
 
 ## liesl config
 
@@ -79,7 +81,7 @@ From the terminal, run `liesl config user --default` to create a default configu
            'PortRange': '32'}}
 ```
 
----
+--------------------------------------------------------------------------------
 
 ## liesl mock
 
@@ -246,7 +248,7 @@ You can limit the report e.g. to the source_id by `liesl list --field source_id`
 8746345783361
 ```
 
----
+--------------------------------------------------------------------------------
 
 ### liesl xdf
 
