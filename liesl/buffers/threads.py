@@ -59,7 +59,7 @@ class RingBuffer(threading.Thread):
         return self.buffer.maxshape
 
     def stop(self):
-        self.is_running.clear()
+        self._is_running.clear()
         self.join()
 
     @property
