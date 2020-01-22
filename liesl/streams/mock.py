@@ -36,7 +36,7 @@ class Mock(threading.Thread):
         )
         self.channel_count = channel_count
         self.samplestep = 1 / nominal_srate
-
+        self.is_running = False
         channels = self.info.desc().append_child("channels")
         types = (f"MockEEG" for x in range(1, channel_count + 1, 1))
         units = ("au" for x in range(1, channel_count + 1, 1))
