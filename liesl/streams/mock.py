@@ -52,11 +52,10 @@ class Mock(threading.Thread):
         print("Shutting down")
 
     def run(self):
-
-        self.is_running = True
-        print("now sending data...")
         outlet = StreamOutlet(self.info)
         count = 0.0
+        print("now sending data...")
+        self.is_running = True
         while self.is_running:
             # make a new random 8-channel sample; this is converted into a
             # pylsl.vectorf (the data type that is expected by push_sample)
