@@ -1,4 +1,4 @@
-import pyliesl.api as liesl
+import liesl.api as liesl
 
 
 def test_convert_inlet_to_dict(mock):

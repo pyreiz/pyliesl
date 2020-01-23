@@ -1,4 +1,5 @@
-import pyliesl.api as liesl
+from liesl.streams.finder import recover_info 
+import liesl.api as liesl
 import socket
 from pylsl import StreamInfo, StreamInlet
 import pytest
@@ -34,7 +35,7 @@ def test_open_streams_border_cases(markermock, mock):
 
 def test_recover_info(markermock, mock):
     stream = liesl.open_stream(name="Liesl-Mock-EEG")
-    sinfo = liesl.streams.finder.recover_info(stream)
+    sinfo = recover_info(stream)
     assert stream.info().name() == sinfo.name()
 
 
