@@ -1,4 +1,4 @@
-import liesl
+import pyliesl.api as liesl
 import socket
 from pylsl import StreamInfo, StreamInlet
 import pytest

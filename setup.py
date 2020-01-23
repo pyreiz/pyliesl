@@ -2,8 +2,8 @@ from distutils.core import setup
 import setuptools
 
 setup(
-    name="LieSL",
-    version="0.1.0",
+    name="pyliesl",
+    version="0.2.0",
     description="Toolbox to receive and process LSL streams and handle XDF files.",
     long_description="A Python Toolbox to receive and process labstreaminglayer streams and handle XDF files",
     author="Robert Guggenberger",
