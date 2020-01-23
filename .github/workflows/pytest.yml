@@ -15,8 +15,10 @@ jobs:
         python-version: 3.7
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        python -m pip install --upgrade pip        
+        wget https://github.com/sccn/liblsl/releases/download/1.13.0-b13/liblsl-1.13.0-Linux64-bionic.deb
+        sudo dpkg -i liblsl-1.13.0-Linux64-bionic.deb        
+        pip install git+https://github.com/labstreaminglayer/liblsl-Python.git                         
         pip install .
     - name: Lint with flake8
       run: |
