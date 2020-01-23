@@ -11,6 +11,10 @@ setup(
     url="https://github.com/pyreiz/pyliesl",
     packages=setuptools.find_packages(),
     download_url="https://github.com/pyreiz/pyliesl",
+    install_requires = [
+        "pyxdf",
+        "pylsl >= 1.13",
+    ],
     license="MIT",
     entry_points={"console_scripts": ["liesl=liesl.cli.main:main"],},
     classifiers=[
