@@ -1,24 +1,6 @@
 from distutils.core import setup
 import setuptools
-
-from os import environ
-print(environ)
-if environ.get("READTHEDOCS", False):
-    install_requires = [
-        "pyglet >= 1.4.7",
-    ]
-    import os
-
-    os.system("conda install pylyl -c tstenner")
-    print("Running on RTD")
-    install_requires = [
-        "pyxdf",    
-    ],
-else:
-    install_requires = [
-        "pyxdf",
-        "pylsl >= 1.13",
-    ],
+from setuptools.command.install import install
 
 setup(
     name="liesl",
@@ -30,7 +12,6 @@ setup(
     url="https://github.com/pyreiz/pyliesl",
     packages=setuptools.find_packages(),
     download_url="https://github.com/pyreiz/pyliesl",
-    install_requires = install_requires,
     license="MIT",
     entry_points={"console_scripts": ["liesl=liesl.cli.main:main"],},
     classifiers=[
