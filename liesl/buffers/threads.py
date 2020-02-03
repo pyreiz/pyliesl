@@ -2,23 +2,47 @@
 """
 Threaded ring and blockbuffers
 """
+from typing import Tuple
+from numpy import ndarray
 import threading
 import time
 from liesl.buffers.ringbuffer import SimpleRingBuffer
 from liesl.streams.convert import inlet_to_dict
-from pylsl import StreamInlet
+from pylsl import StreamInlet, StreamInfo
 
 #%%
 class RingBuffer(threading.Thread):
     def __init__(
-        self, streaminfo, duration_in_ms: float = 1000, verbose=False, fs=None
+        self,
+        streaminfo: StreamInfo,
+        duration_in_ms: float = 1000,
+        verbose: bool = False,
     ) -> None:
+        """A ringbuffer subscribed to an LSL outlet
+        
+        The ringbuffer automatically updating itself as a thread
+
+        args
+        ----
+        streaminfo: StreamInfo
+            identifies the StreamOutlet and will be connected once the buffer started
+        duration_in_ms: float
+            the length of the ringbuffer in ms. is automatically converted into samples based on the nominal sampling rate of the LSL Outlet
+        verbose:bool
+            how verbose the ringbuffer should be. defaults to False
+
+
+        
+        """
         threading.Thread.__init__(self)
         self.streaminfo = streaminfo
-        if fs is None:
-            fs = streaminfo.nominal_srate()
-        if fs == 0:
-            self.fs = 1000  # convert duration_in_ms into duration_in_samples
+        fs = streaminfo.nominal_srate()
+        if fs == 0:  # pragma no cover
+            self.fs = 1000
+            print(
+                "Irregular sampling rate. Assuming fs=1000 and "
+                + "convert duration_in_ms into duration_in_samples"
+            )
         else:
             self.fs = fs
         max_row = int(duration_in_ms * (self.fs / 1000))
@@ -35,15 +59,12 @@ class RingBuffer(threading.Thread):
         self.buffer.reset()
         self.bufferlock.release()
 
-    def get_data(self):
+    def get_data(self) -> ndarray:
         with self.bufferlock:
             buffer = self.buffer.get()
         return buffer
 
-    def get_timed(self):
-        return self.get()
-
-    def get(self):
+    def get(self) -> Tuple[ndarray, ndarray]:
         with self.bufferlock:
             buffer = self.buffer.get()
             tstamps = self.tstamps.get()
@@ -51,15 +72,19 @@ class RingBuffer(threading.Thread):
         return buffer, tstamps
 
     @property
-    def shape(self):
+    def shape(self) -> Tuple[int, int]:
         return self.buffer.shape
 
     @property
-    def maxshape(self):
-        return self.buffer.maxshape
+    def max_shape(self) -> Tuple[int, int]:
+        return self.buffer.max_shape
+
+    @property
+    def is_full(self) -> bool:
+        return self.buffer.shape[0] == self.buffer.max_shape[0]
 
     def stop(self):
-        self._is_running.clear()
+        self.is_running = False
         self.join()
 
     @property
@@ -74,7 +99,12 @@ class RingBuffer(threading.Thread):
             self._is_running.clear()
 
     def await_running(self):
+        "start the buffer and return once everything has started"
         print("[", end="")
+        try:
+            self.start()
+        except RuntimeError:  # pragma no cover
+            pass
         while not self.is_running:
             time.sleep(0.1)
             print(".", end="")
