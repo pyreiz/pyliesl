@@ -14,6 +14,11 @@ The main API can be accessed directly from liesl, e.g.
 .. automodule:: liesl.streams.convert
    :members: inlet_to_dict, inlet_to_chanidx
 
+.. automodule:: liesl.buffers.ringbuffer
+   :members: RingBuffer
+   
+.. automodule:: liesl.buffers.blockbuffer
+   :members: SimpleBlockBuffer
 
 .. automodule:: liesl.files.run
    :members: Run

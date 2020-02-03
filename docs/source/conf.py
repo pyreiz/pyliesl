@@ -42,7 +42,7 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
     "sphinx.ext.githubpages",
-    "m2r",  # convert markdown to rst with .. mdinclude::
+    #  "m2r",  # convert markdown to rst with .. mdinclude::
     "sphinx_autodoc_typehints",  # : pip install sphinx-autodoc-typehints
     "sphinx_rtd_theme",
 ]

@@ -1,2 +1,2 @@
-m2r
 sphinx_autodoc_typehints
+sphinx_rtd_theme
