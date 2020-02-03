@@ -1,2 +1,3 @@
 pylsl
 pyxdf
+numpy

@@ -8,3 +8,4 @@ dependencies:
     - m2r
     - sphinx-autodoc-typehints
     - sphinx-rtd-theme
+    - numpy

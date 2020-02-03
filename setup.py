@@ -1,6 +1,4 @@
-from distutils.core import setup
-import setuptools
-from setuptools.command.install import install
+from setuptools import setup, find_namespace_packages
 
 setup(
     name="liesl",
@@ -10,7 +8,7 @@ setup(
     author="Robert Guggenberger",
     author_email="robert.guggenberger@uni-tuebingen.de",
     url="https://github.com/pyreiz/pyliesl",
-    packages=setuptools.find_packages(),
+    packages=find_namespace_packages(include=["*liesl*"], exclude=["build*", "docs*"]),
     download_url="https://github.com/pyreiz/pyliesl",
     license="MIT",
     entry_points={"console_scripts": ["liesl=liesl.cli.main:main"],},
