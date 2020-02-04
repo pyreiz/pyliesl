@@ -1,4 +1,4 @@
-from subprocess import PIPE, Popen
+from subprocess import PIPE, Popen, run
 from pathlib import Path
 from liesl.files.labrecorder.manager import follow_lnk, find_file, validate
 from liesl.files.run import Run
@@ -59,6 +59,10 @@ class LabRecorderCLI:
         
     """
 
+    def __init__(self, path_to_cmd: str = None) -> None:
+        self.streamargs = None
+        self.cmd = find_lrcmd(path_to_cmd)
+
     def bind(self, streamargs: List[dict,] = [None]) -> None:
         """bind a set of required streams to start recording
         Recording will throw a ConnectionError if these streams are not present 
@@ -66,29 +70,11 @@ class LabRecorderCLI:
         """
         self.streamargs = validate(streamargs) if streamargs is not None else None
 
-    def validate(self):
-        validate(self.streamargs)
-
-    def __init__(self, path_to_cmd: str = "~") -> None:
-        self.streamargs = None
-        self.cmd = find_lrcmd(path_to_cmd)
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        if exc_type is not None:
-            if exc_type is ConnectionError:
-                print(exc_value)
-                raise exc_type("Not all required streams were found")
-            else:
-                raise exc_type
-
     def start_recording(
         self,
         filename: str = "~/recordings/recording.xdf",
         streamargs: List[dict,] = None,
-    ) -> None:
+    ):
 
         if streamargs is not None:
             self.bind(streamargs)
@@ -100,42 +86,37 @@ class LabRecorderCLI:
         filename.parent.mkdir(exist_ok=True, parents=True)
 
         # start encoding the command
-        streams = ""
-        for si, sargs in enumerate(self.streamargs):
+        streams = []
+        for idx, uid in enumerate(self.streamargs):
             stream = '"'
-            for i, (k, v) in enumerate(sargs.items()):
-                prt = f"{k}='{v}'"
-                if i > 0:
-                    prt = " and " + prt
-                stream += prt
+            prt = f"source_id={uid}"
+            stream += prt
             stream += '"'
-            if si > 0:
-                stream = " " + stream
-            streams += stream
+            streams.append(stream)
 
+        # print(" ".join((str(self.cmd), str(filename), *streams)))
         # start the recording process
         self.process = Popen(
-            " ".join((str(self.cmd), str(filename), str(streams))),
+            [str(self.cmd), str(filename), *streams],
             stdin=PIPE,
             stdout=PIPE,
             stderr=PIPE,
             bufsize=1,
         )
         peek = self.process.stdout.peek()
-        if b"matched no stream" in peek:
+        if b"matched no stream" in peek:  # pragma no cover
+            # would be already catched by self.validate
             self.stop_recording()
             print("\a")  # makes a platfrom independent beep
             raise ConnectionError(peek.decode().strip())
         self.t0 = time.time()
         print("Start recording to {0}".format(filename))
-
-    def close(self) -> None:
-        self.stop_recording()
+        return filename
 
     def stop_recording(self) -> None:
         if hasattr(self, "process"):
             o, e = self.process.communicate(b"\n")
-            if self.process.poll() != 0:
+            if self.process.poll() != 0:  # pragma no cover
                 raise ConnectionError(o + e)
             del self.process
             self.dur = time.time() - self.t0

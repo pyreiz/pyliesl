@@ -14,8 +14,7 @@ class Session:
                       {'name':"BrainVision RDA Markers", "hostname": localhostname},
                       {'name':"BrainVision RDA", "hostname": localhostname}]
         
-        session = Session(prefix="VvNn", 
-                          recorder=Recorder(path_to_cmd=r"~/Desktop/LabRecorder.lnk"),
+        session = Session(prefix="VvNn",
                           streamargs=streamargs)
 
 
@@ -35,7 +34,7 @@ class Session:
         self.folder = self.mainfolder / self.prefix
         self.folder.mkdir(exist_ok=True, parents=True)
         if recorder is None:
-            raise ValueError("No recorder specified")
+            self.recorder = Recorder()
         else:
             self.recorder = recorder
         self.recorder.bind(streamargs)
@@ -54,7 +53,7 @@ class Session:
             raise FileExistsError("Am currently recording. Stop first")
         fname = self.folder / Path(task + ".xdf")
         fname.parent.mkdir(exist_ok=True, parents=True)
-        self.recorder.start_recording(fname)
+        print("Saving to", self.recorder.start_recording(fname))
         self._is_recording = True
 
     def stop_recording(self):
