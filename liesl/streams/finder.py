@@ -23,7 +23,13 @@ def recover_info(stream: StreamInlet) -> StreamInfo:
 
 
 def print_available_streams():
-    "prints all available streams in their xml form"
+    """prints all available streams in their xml form
+    
+    Example::
+
+        import liesl
+        liesl.print_available_streams()
+    """
     available_streams = pylsl.resolve_streams()
     for a in available_streams:
         print(a.as_xml())
@@ -45,6 +51,12 @@ def open_stream(**kwargs) -> StreamInlet:
         a single StreamInlet matching the kwargs. 
     
     
+    
+    Example::
+
+        import liesl
+        stream = liesl.open_stream(name="Liesl-Mock-EEG")
+
     """
     infos = get_streaminfos_matching(**kwargs)
     if infos is None:
@@ -70,6 +82,11 @@ def open_streaminfo(**kwargs) -> StreamInfo:
     sinfo: StreamInfo
         a single StreamInfo matching the kwargs. 
     
+
+    Example::
+
+        import liesl
+        sinfo = liesl.open_streaminfo(name="Liesl-Mock-EEG")
     
     """
     infos = get_streaminfos_matching(**kwargs)
@@ -83,6 +100,7 @@ def open_streaminfo(**kwargs) -> StreamInfo:
 
 def get_streams_matching(**kwargs) -> List[StreamInlet]:
     """get all streaminlets matching kwargs
+
     args
     ----
     **kwargs:
@@ -93,6 +111,12 @@ def get_streams_matching(**kwargs) -> List[StreamInlet]:
     streams: List[StreamInlet]
         a list of StreamInlets matching the kwargs
     
+
+    Example::
+    
+        import liesl
+        streams = liesl.get_streams_matching(name="Liesl-Mock-EEG")
+
     """
     infos = get_streaminfos_matching(**kwargs)
     if infos is None:
@@ -106,6 +130,7 @@ def get_streams_matching(**kwargs) -> List[StreamInlet]:
 
 def get_streaminfos_matching(**kwargs) -> List[StreamInfo]:
     """
+
     args
     ----
     **kwargs:
@@ -116,6 +141,12 @@ def get_streaminfos_matching(**kwargs) -> List[StreamInfo]:
     sinfos: List[StreamInfo]
         a list of StreamInfo matching the kwargs
     
+    
+    Example::
+    
+        import liesl
+        sinfos = liesl.get_streaminfos_matching(name="Liesl-Mock-EEG")
+
     """
     # find all available streams, check whether they are fitting with kwargs
     available_streams = pylsl.resolve_streams()

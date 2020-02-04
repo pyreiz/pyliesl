@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Response
---------
+Responses
+---------
 """
 from typing import Tuple, List
 import numpy as np

@@ -1,5 +1,5 @@
 import pytest
-from liesl.streams.response import Response, MockResponse
+from liesl.buffers.response import Response, MockResponse
 import numpy as np
 import json
 

@@ -7,25 +7,58 @@ from liesl.streams._xmltodict import parse as xml_to_dict
 from typing import Dict
 from pylsl import StreamInlet
 
-ChannelIndexMap = Dict[str, int]
+ChannelIndexMap = Dict[str, int]  #: A Mapping from channel-names to channel-indices
 # %%
 def inlet_to_dict(inlet: StreamInlet) -> dict:
-    """
+    """convert inlet information into a dictionary
+
     args
     ----
     inlet: pylsl.StreamInlet
-        for example from inlet = pyliesl.tools.streams.open_stream(type='EEG')
-        
+        the inlet to convert into a dictionary
+
+
     returns
     -------
     
     output: dict
         a dictionary of key information parsed from the xml
+
+
+    Example::
+
+        import liesl
+        stream = liesl.open_stream()
+        d = liesl.inlet_to_dict(stream)
+
     """
     return streaminfoxml_to_dict(inlet.info().as_xml())
 
 
-def inlet_to_chanidx(inlet: StreamInlet) -> ChannelIndexMap:
+def get_channel_map(inlet: StreamInlet) -> ChannelIndexMap:
+    """convert inlet information into a ChannelMapping
+    
+  
+    args
+    ----
+    inlet: pylsl.StreamInlet
+        the inlet to convert into a dictionary
+
+
+    returns
+    -------
+    output: Dict[str, int]
+        a dictionary mapping channel names to indices
+
+
+    Example::
+
+        import liesl
+        stream = liesl.open_stream()
+        chanmap = liesl.get_channel_map(stream)
+
+
+    """
     info = inlet_to_dict(inlet)
     labels = {}
     for chan in info["desc"]["channels"]["channel"]:

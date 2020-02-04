@@ -13,7 +13,8 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import pkg_resources
+from os import environ
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +23,12 @@ copyright = "2019, Robert Guggenberger"
 author = "Robert Guggenberger"
 
 # The full version, including alpha/beta/rc tags
-release = "0.1.0"
+release = pkg_resources.get_distribution(project.lower()).version
+
+# -- General configuration ---------------------------------------------------
+environ[
+    "DOC"
+] = "1"  #  in case we need to change behaviour while constructinjg documentation
 
 
 # -- General configuration ---------------------------------------------------
@@ -95,4 +101,4 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ["_static"]
+# html_static_path = ["_static"]
