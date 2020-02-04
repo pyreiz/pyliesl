@@ -22,3 +22,6 @@ The main API can be accessed directly from liesl, e.g.
 
 .. automodule:: liesl.files.run
    :members: Run
+
+.. automodule:: liesl.streams.response
+   :members: Response, MockResponse
