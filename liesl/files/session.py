@@ -2,9 +2,10 @@ from liesl.files.labrecorder.cli_wrapper import LabRecorderCLI as Recorder
 from typing import List
 from pathlib import Path
 from contextlib import contextmanager
-# %%  
-class Session():
-    '''Class resembling a whole session
+
+# %%
+class Session:
+    """Class for recording a whole session
 
     Example::
 
@@ -16,35 +17,54 @@ class Session():
         session = Session(prefix="VvNn", 
                           recorder=Recorder(path_to_cmd=r"~/Desktop/LabRecorder.lnk"),
                           streamargs=streamargs)
-    '''
-    def __init__(self, 
-                 prefix:str="VvNn",
-                 mainfolder:str=r"~/labrecordings", 
-                 recorder:Recorder=None,
-                 streamargs:List[dict]=[None],
-                 ):
+
+
+        with session("task"):
+            run_task() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/task.xdf
+    """
+
+    def __init__(
+        self,
+        prefix: str = "VvNn",
+        mainfolder: str = "~/labrecordings",
+        recorder: Recorder = None,
+        streamargs: List[dict] = [None],
+    ):
         self.prefix = Path(prefix)
         self.mainfolder = Path(mainfolder).expanduser().absolute()
-        self.folder = (self.mainfolder / self.prefix)
+        self.folder = self.mainfolder / self.prefix
         self.folder.mkdir(exist_ok=True, parents=True)
         if recorder is None:
             raise ValueError("No recorder specified")
         else:
             self.recorder = recorder
         self.recorder.bind(streamargs)
+        self._is_recording = False
+
+    def start_recording(self, task: str = "recording"):
+        """start recording all streams 
         
-        
-    def start_recording(self, task:str="recording"):        
+        args
+        ----
+        task:str
+            the name of the file. will be instantiated as a :class:`~liesl.files.run.Run` and therefore auto-increment
+
+        """
+        if self._is_recording:
+            raise FileExistsError("Am currently recording. Stop first")
         fname = self.folder / Path(task + ".xdf")
-        fname.parent.mkdir(exist_ok=True, parents=True)  
+        fname.parent.mkdir(exist_ok=True, parents=True)
         self.recorder.start_recording(fname)
-        
+        self._is_recording = True
+
     def stop_recording(self):
-        self.recorder.stop_recording()   
-    
+        "stop the current recording"
+        self.recorder.stop_recording()
+        self._is_recording = False
+
     @contextmanager
-    def __call__(self, task:str="recording"):
+    def __call__(self, task: str = "recording"):
         self.start_recording(task)
         yield self
-        self.stop_recording()        
-    
+        self.stop_recording()
+

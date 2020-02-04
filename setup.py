@@ -9,6 +9,7 @@ setup(
     author_email="robert.guggenberger@uni-tuebingen.de",
     url="https://github.com/pyreiz/pyliesl",
     packages=find_packages(exclude=["test*"]),
+    include_package_data=True,
     download_url="https://github.com/pyreiz/pyliesl",
     license="MIT",
     entry_points={"console_scripts": ["liesl=liesl.cli.main:main"],},

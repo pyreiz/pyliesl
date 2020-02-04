@@ -9,10 +9,11 @@ class Run(Path):
     fname:str
         the filename, requires the suffix .xdf
 
+
     Example::
 
-    run = Run("test")
-    print(run.name) # prints test_R001.xdf    
+        run = Run("test")
+        print(run.name) # prints test_R001.xdf    
 
 
     """

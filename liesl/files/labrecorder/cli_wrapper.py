@@ -5,52 +5,42 @@ from liesl.files.run import Run
 import logging
 import time
 from typing import List
-
-logger = logging.getLogger()
-logging.basicConfig(level=logging.DEBUG)
-# %%
+import pkg_resources
+import sys
 
 
-def find_lrcmd(path_to_cmd: str = "~"):
+def find_lrcmd_os(platform: str) -> Path:
+    "return the default path to labrecorder for this platform"
+    root = Path(pkg_resources.resource_filename("liesl", "files/labrecorder/lib"))
+    if "linux" in platform:
+        path_to_cmd = root / "LabRecorderCLI"
+    elif "win" in platform:
+        path_to_cmd = root / "LabRecorderCLI.exe"
+    else:
+        raise NotImplementedError()
+    if path_to_cmd.exists() == False:
+        path_to_cmd = "~"
+    return path_to_cmd
+
+
+def find_lrcmd(path_to_cmd: str = None) -> Path:
+    "Find and validate the path to LabRecorder"
+    if path_to_cmd is None:
+        path_to_cmd = find_lrcmd_os(sys.platform)
     path_to_cmd = Path(str(path_to_cmd)).expanduser().absolute()
+
     if not path_to_cmd.exists():
         raise FileNotFoundError("Path to command does not exist")
 
-    # this is the full correct path to command
-    if path_to_cmd.name == "LabRecorderCLI.exe":
-        return path_to_cmd
-
-    if path_to_cmd.suffixes[-1] == ".lnk":
-        path_to_cmd = follow_lnk(path_to_cmd).parent / "LabRecorderCLI.exe"
-        if not path_to_cmd.exists():
-            raise FileNotFoundError("Path to command does not exist")
-        return path_to_cmd
-
-    # the command is directly in the folder
-    pospath = path_to_cmd / "LabRecorderCLI.exe"
-    pospath = pospath if pospath.exists() else None
-    if pospath is not None:
-        return pospath
-
-    # there is a link on the desktop, useful because the default folder is "~"
-    pospath = follow_lnk(
-        find_file(Path(path_to_cmd) / "Desktop", file="LabRecorder.lnk")
-    )
-    if pospath is not None and pospath.name == "LabRecorderCLI.exe":
-        return pospath
-
-    # there is the file somewhere in a subfolder
-    pospath = find_file(path_to_cmd, file="LabRecorderCLI.exe")
-    if pospath is not None:
-        return pospath
-
-    # there is a link somewhere in a subfolder
-    pospath = follow_lnk(find_file(Path(path_to_cmd), file="LabRecorder.lnk"))
-    if pospath is not None and pospath.name == "LabRecorderCLI.exe":
-        return pospath
+    if "linux" in sys.platform:
+        if path_to_cmd.name == "LabRecorderCLI":
+            return path_to_cmd
+    elif "win" in sys.platform:
+        if path_to_cmd.name == "LabRecorderCLI.exe":
+            return path_to_cmd
 
     # if nothing worked, we end here
-    raise FileNotFoundError("Path to command not found")
+    raise FileNotFoundError("No valid path to LabRecorder")
 
 
 class LabRecorderCLI:
@@ -60,7 +50,8 @@ class LabRecorderCLI:
                       
         filename = '~/Desktop/untitled.xdf'
         streamargs = [{"type":"EEG"},{"type":"Marker"}]
-        streamargs = [{"type":"EEG", "name":"Liesl-Mock"},{"type":"Marker"}]
+        streamargs = [{"type":"EEG", "name":"Liesl-Mock-EEG"},              
+                      {"type":"Marker"}]
         lr = LabRecorderCLI()   
         lr.start_recording(filename, streamargs)       
         time.sleep(5)    
@@ -136,7 +127,7 @@ class LabRecorderCLI:
             print("\a")  # makes a platfrom independent beep
             raise ConnectionError(peek.decode().strip())
         self.t0 = time.time()
-        logger.info("Start recording to {0}".format(filename))
+        print("Start recording to {0}".format(filename))
 
     def close(self) -> None:
         self.stop_recording()
@@ -148,7 +139,5 @@ class LabRecorderCLI:
                 raise ConnectionError(o + e)
             del self.process
             self.dur = time.time() - self.t0
-        logger.info("Stopped recording after {0}s".format(self.dur))
+        print("Stopped recording after {0}s".format(self.dur))
 
-
-# %%
