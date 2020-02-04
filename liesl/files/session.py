@@ -1,11 +1,16 @@
+"""
+Session
+-------
+
+"""
 from liesl.files.labrecorder.cli_wrapper import LabRecorderCLI as Recorder
 from typing import List
 from pathlib import Path
 from contextlib import contextmanager
 
-# %%
+
 class Session:
-    """Class for recording a whole session
+    """Manages recordings for a whole session
 
     Example::
 
@@ -19,7 +24,14 @@ class Session:
 
 
         with session("task"):
-            run_task() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/task.xdf
+            run_task() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/task_R001.xdf
+
+
+        with session("task"):
+            run_task() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/task_R002.xdf
+        
+        with session("othertask"):
+            run_othertask() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/othertask_R001.xdf
     """
 
     def __init__(

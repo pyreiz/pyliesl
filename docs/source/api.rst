@@ -20,7 +20,6 @@ Buffers
 *******
 
 
-
 .. automodule:: liesl.buffers.ringbuffer
    :members: RingBuffer
 
