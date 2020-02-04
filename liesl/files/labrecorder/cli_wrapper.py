@@ -1,6 +1,6 @@
 from subprocess import PIPE, Popen, run
 from pathlib import Path
-from liesl.files.labrecorder.manager import follow_lnk, find_file, validate
+from liesl.files.labrecorder.manager import find_file, validate
 from liesl.files.run import Run
 import logging
 import time

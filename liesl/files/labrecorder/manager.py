@@ -49,20 +49,6 @@ def validate(streamargs: List[dict]) -> Set[str]:
         return sids
 
 
-def add_to_path(path):
-    os.system('setx path "%path%;{0:s}"'.format(path))
-
-
-def follow_lnk(path):
-    "follow a lnk file on windows"
-    import win32com.client
-
-    path = str(path)
-    shell = win32com.client.Dispatch("WScript.Shell")
-    shortcut = shell.CreateShortCut(path)
-    return Path(shortcut.Targetpath)
-
-
 def find_file(path="~", file="LabRecorderCLI.exe") -> Union[Path, None]:
     """find a file recursively
     
