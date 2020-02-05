@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="liesl",
-    version="0.3.0",
+    version="0.3.1",
     description="Toolbox to receive and process LSL streams and handle XDF files.",
     long_description="A Python Toolbox to receive and process labstreaminglayer streams and handle XDF files",
     author="Robert Guggenberger",

@@ -43,7 +43,8 @@ Recording
    :members: Run
 
 .. automodule:: liesl.files.session
-   :members: Session
+   :members: Session, Recorder
+
 
 
 

@@ -1,3 +1,8 @@
+"""
+LabRecorderCLI
+--------------
+"""
+
 from subprocess import PIPE, Popen, run
 from pathlib import Path
 from liesl.files.labrecorder.manager import find_file, validate
@@ -44,8 +49,16 @@ def find_lrcmd(path_to_cmd: str = None) -> Path:
 
 
 class LabRecorderCLI:
-    """Process based interface for LabRecorder
+    """Process based interface for LabRecorderCLI
         
+    args
+    ----
+    path_to_cmd:str
+        defaults to None and select the LabRecorder installed in liesl/files/labrecorder/lib. Otherwise, use the path to the LabRecorderCLI of your desire.
+
+
+    Use :meth:`~.start_recording` and :meth:`~.stop_recording` to record a set of streams identified by keyword arguments.
+
     Example::
                       
         filename = '~/Desktop/untitled.xdf'
@@ -75,6 +88,7 @@ class LabRecorderCLI:
         filename: str = "~/recordings/recording.xdf",
         streamargs: List[dict,] = None,
     ):
+        "start recording the streams identified by streamargs to filename"
 
         if streamargs is not None:
             self.bind(streamargs)
@@ -114,6 +128,7 @@ class LabRecorderCLI:
         return filename
 
     def stop_recording(self) -> None:
+        "stop recording"
         if hasattr(self, "process"):
             o, e = self.process.communicate(b"\n")
             if self.process.poll() != 0:  # pragma no cover

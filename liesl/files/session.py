@@ -24,14 +24,20 @@ class Session:
 
 
         with session("task"):
-            run_task() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/task_R001.xdf
+            run_task() 
+            #  run your task, and while it runs, the streams are recorded
+            # to ~/labrecording/VvNn/task_R001.xdf
 
 
         with session("task"):
-            run_task() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/task_R002.xdf
+            run_task() 
+            # run your task, and while it runs, the streams are recorded 
+            # to ~/labrecording/VvNn/task_R002.xdf
         
         with session("othertask"):
-            run_othertask() #  run your task, and while it runs, the streams are recorded to ~/labrecording/VvNn/othertask_R001.xdf
+            run_othertask() 
+            # run your task, and while it runs, the streams are recorded 
+            # to ~/labrecording/VvNn/othertask_R001.xdf
     """
 
     def __init__(
