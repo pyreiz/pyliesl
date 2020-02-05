@@ -1,8 +1,8 @@
 liesl API
 ----------
 
-The main API can be accessed directly from liesl, e.g.
-
+The main API can be accessed directly from liesl using 
+:code:`import liesl.api as liesl`.
 
 Stream Handling
 ***************

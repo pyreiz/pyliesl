@@ -25,6 +25,12 @@ author = "Robert Guggenberger"
 # The full version, including alpha/beta/rc tags
 release = pkg_resources.get_distribution(project.lower()).version
 
+
+from liesl.cli.main import create_cli_rst
+
+create_cli_rst("cli.rst")
+
+
 # -- General configuration ---------------------------------------------------
 environ[
     "DOC"

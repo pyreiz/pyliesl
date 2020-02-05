@@ -1,23 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Jun  5 16:48:56 2019
-
-@author: Robert Guggenberger
+Command Line Interface
+----------------------
 """
 import json
+import argparse
 
 
-def get_args():
-    import argparse
+def get_parser():
 
     parser = argparse.ArgumentParser(prog="liesl")
     subparsers = parser.add_subparsers(dest="subcommand")
 
+    # config ------------------------------------------------------------------
     helpstr = """initialize the lsl_api.cfg for all users with system,
                 globally for this user with global or
                 locally in this folder with local"""
 
-    # --------------------------------------------------------------------------
     parser_cfg = subparsers.add_parser("config", help=helpstr)
     helpstr = """system: /etc/lsl_api/lsl_api.cfg or
                           C:\\etc\\lsl_api\\lsl_api.cfg on Windows.\r\n
@@ -37,12 +36,12 @@ def get_args():
         "--knownpeers", type=str, help="set knownpeers for this level"
     )
 
-    # -------------------------------------------------------------------------
+    # list --------------------------------------------------------------------
     helpstr = """list available LSL streams"""
     parser_list = subparsers.add_parser("list", help=helpstr)
     parser_list.add_argument("--field", help="which field to print", default="any")
 
-    # -------------------------------------------------------------------------
+    # show --------------------------------------------------------------------
     helpstr = """Visualize a specific LSL streams"""
     parser_show = subparsers.add_parser("show", help=helpstr)
     parser_show.add_argument("--name", help="name of the stream")
@@ -61,12 +60,12 @@ def get_args():
         help="at which frequency the plot will be updated",
     )
 
-    # -------------------------------------------------------------------------
+    # mock --------------------------------------------------------------------
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser("mock", help=helpstr)
     parser_mock.add_argument("--type", help="type of the stream", default="EEG")
 
-    # -------------------------------------------------------------------------
+    # xdf ---------------------------------------------------------------------
     helpstr = """inspect an XDF file"""
     parser_xdf = subparsers.add_parser("xdf", help=helpstr)
     parser_xdf.add_argument("filename", help="filename")
@@ -76,97 +75,135 @@ def get_args():
         help="only peek into the file, looking for at most N streaminfos. If searching takes too long, returns after a certain time anyways. Useful for example if file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file",
     )
 
-    return parser.parse_known_args(), parser
+    return parser
+
+
+def xdf(args):
+    "execute xdf subcommand"
+    if not args.at_most:
+        from liesl.files.xdf.inspect_xdf import main as print_xdf
+
+        print_xdf(args.filename)
+    else:
+        from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
+
+        print_xdf(args.filename, args.at_most)
+
+
+def config(args):
+    "execute subcommand config"
+    if args.default:
+        from liesl.cli.lsl_api import init_lsl_api_cfg
+
+        init_lsl_api_cfg(args.scope)
+        return
+
+    from liesl.cli.lsl_api import Ini
+
+    ini = Ini(args.scope)
+    ini.refresh()
+    if args.sessionid:
+        print(args.sessionid)
+        ini.ini["lab"]["SessionID"] = args.sessionid
+        ini.write()
+
+    if args.knownpeers:
+        print(args.knownpeers)
+        ini.ini["lab"]["KnownPeers"] = "{" + args.knownpeers + "}"
+        ini.write()
+
+    from liesl.cli.lsl_api import print_config
+
+    print_config(args.scope)
+
+
+def show(args):
+    "execute subcommand show"
+    kwargs = vars(args)
+    kwargs["channel"] = kwargs.get("channel", 0)
+    if args.backend == "mpl":
+        from liesl.show.mpl import main
+    elif args.backend == "ascii":
+        from liesl.show.textplot import main
+    else:
+        raise ValueError(f"Backend {args.backend} not available")
+
+    del kwargs["backend"]
+    del kwargs["subcommand"]
+    arguments = dict()
+    for k, v in kwargs.items():
+        if v is not None:
+            arguments[k] = v
+    return main(**arguments)
+
+
+def mock(args):
+    "execute subcommand mock"
+    if "marker" in args.type.lower():
+        from liesl.streams.mock import MarkerMock
+
+        m = MarkerMock()
+    else:
+        from liesl.streams.mock import Mock
+
+        m = Mock()
+    print(m)
+    m.start()
+
+
+def do_list(args):
+    "execute subcommand list"
+    from liesl.streams.finder import print_available_streams
+
+    return print_available_streams()
 
 
 def start(args, unknown):
-
-    # print(args)
     if args.subcommand == "xdf":
-        if not args.at_most:
-            from liesl.files.xdf.inspect_xdf import main as print_xdf
-
-            print_xdf(args.filename)
-        else:
-            from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
-
-            print_xdf(args.filename, args.at_most)
-
+        return xdf(args)
     if args.subcommand == "config":
-        if args.default:
-            from liesl.cli.lsl_api import init_lsl_api_cfg
-
-            init_lsl_api_cfg(args.scope)
-            return
-
-        from liesl.cli.lsl_api import Ini
-
-        ini = Ini(args.scope)
-        ini.refresh()
-        if args.sessionid:
-            print(args.sessionid)
-            ini.ini["lab"]["SessionID"] = args.sessionid
-            ini.write()
-
-        if args.knownpeers:
-            print(args.knownpeers)
-            ini.ini["lab"]["KnownPeers"] = "{" + args.knownpeers + "}"
-            ini.write()
-
-        from liesl.cli.lsl_api import print_config
-
-        print_config(args.scope)
-        return
-
+        return config(args)
     if args.subcommand == "show":
-        kwargs = vars(args)
-        kwargs["channel"] = kwargs.get("channel", 0)
-        if args.backend == "mpl":
-            from liesl.show.mpl import main
-        elif args.backend == "ascii":
-            from liesl.show.textplot import main
-        else:
-            raise ValueError(f"Backend {args.backend} not available")
-
-        del kwargs["backend"]
-        del kwargs["subcommand"]
-        arguments = dict()
-        for k, v in kwargs.items():
-            if v is not None:
-                arguments[k] = v
-        main(**arguments)
-        return
-
+        return show(args)
     if args.subcommand == "mock":
-
-        if "marker" in args.type.lower():
-            from liesl.streams.mock import MarkerMock
-
-            m = MarkerMock()
-        else:
-            from liesl.streams.mock import Mock
-
-            m = Mock()
-        print(m)
-        m.start()
-        return
-
+        return mock(args)
     if args.subcommand == "list":
+        return do_list(args)
 
-        from liesl.streams.finder import print_available_streams
 
-        print_available_streams()
-        return
+def format_help(parser) -> str:
+    cb = ".. code-block:: bash\n\n"
+
+    title = parser.prog + "\n" + "~" * len(parser.prog)
+    helpstr = parser.format_help()
+    yield title + "\n"
+    yield cb
+    for line in helpstr.splitlines():
+        yield "   " + line + "\n"
+    yield "\n\n"
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for choice, subparser in action.choices.items():
+                title = subparser.prog + "\n" + "~" * len(subparser.prog)
+                yield title + "\n"
+                yield cb
+                for line in subparser.format_help().splitlines():
+                    yield "   " + line + "\n"
+                yield "\n\n"
 
 
 def main():
-    import sys
-
-    (args, unknown), parser = get_args()
+    "entry point for console_scripts: liesl"
+    parser = get_parser()
+    args, unknown = parser.parse_known_args()
     start(args, unknown)
-    sys.exit()
 
 
-if __name__ == "__main__":
+def create_cli_rst(fname: str):
+    helpstr = format_help(get_parser())
+    with open(fname, "w") as f:
+        f.write("liesl CLI\n")
+        f.write("---------\n")
+        for h in helpstr:
+            f.write(h)
 
-    get_args()

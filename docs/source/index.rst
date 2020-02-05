@@ -8,8 +8,9 @@ Welcome to LieSL's documentation!
 
 .. toctree::
    :maxdepth: 3
-   
+
    api
+   cli
 
 Indices and tables
 ==================
