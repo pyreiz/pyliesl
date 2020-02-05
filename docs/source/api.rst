@@ -1,8 +1,12 @@
 liesl API
 ----------
 
-The main API can be accessed directly from liesl using 
-:code:`import liesl.api as liesl`.
+The main API can be accessed directly from liesl using e.g.
+
+.. code-block:: python
+
+   import liesl
+   stream = liesl.print_available_streams()
 
 Stream Handling
 ***************
@@ -15,10 +19,12 @@ Detect and print information about available streams.
 .. automodule:: liesl.streams.convert
    :members: inlet_to_dict, get_channel_map
 
+.. automodule:: liesl.streams
+   :members: localhostname, localhost, localip
+
 
 Buffers
 *******
-
 
 .. automodule:: liesl.buffers.ringbuffer
    :members: RingBuffer

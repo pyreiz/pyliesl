@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="liesl",
-    version="0.2.0",
+    version="0.3.0",
     description="Toolbox to receive and process LSL streams and handle XDF files.",
     long_description="A Python Toolbox to receive and process labstreaminglayer streams and handle XDF files",
     author="Robert Guggenberger",
@@ -14,7 +14,7 @@ setup(
     license="MIT",
     entry_points={"console_scripts": ["liesl=liesl.cli.main:main"],},
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
         "Intended Audience :: Developers",
         "Intended Audience :: Education",

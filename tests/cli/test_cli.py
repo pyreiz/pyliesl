@@ -6,7 +6,7 @@ from liesl.cli.lsl_api import Ini, default_lsl_api_cfg
 import signal
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def xdf_file(mock, markermock, tmpdir_factory):
     lr = LabRecorderCLI()
     fn = tmpdir_factory.mktemp("data")
@@ -35,11 +35,9 @@ def test_cli_xdf(xdf_file):
 
 
 def test_cli_xdf_at_most(xdf_file):
-    p = Popen(["liesl", "xdf", xdf_file, "--at-most", "10"], stdout=PIPE, stderr=PIPE)
+    p = Popen(["liesl", "xdf", xdf_file, "--at-most", "2"], stdout=PIPE, stderr=PIPE)
     o, e = p.communicate()
     assert f"Loading {xdf_file}" in o.decode()
-    assert "Liesl-Mock-EEG" in o.decode()
-    assert "Liesl-Mock-Marker" in o.decode()
 
 
 def test_cli_config_default(tmpdir, monkeypatch):
