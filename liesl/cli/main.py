@@ -104,12 +104,20 @@ def config(args):
     ini.refresh()
     if args.sessionid:
         print(args.sessionid)
-        ini.ini["lab"]["SessionID"] = args.sessionid
+        try:
+            ini.ini["lab"]["SessionID"] = args.sessionid
+        except KeyError:
+            ini.ini["lab"] = {}
+            ini.ini["lab"]["SessionID"] = args.sessionid
         ini.write()
 
     if args.knownpeers:
         print(args.knownpeers)
-        ini.ini["lab"]["KnownPeers"] = "{" + args.knownpeers + "}"
+        try:
+            ini.ini["lab"]["KnownPeers"] = "{" + args.knownpeers + "}"
+        except KeyError:
+            ini.ini["lab"] = {}
+            ini.ini["lab"]["KnownPeers"] = "{" + args.knownpeers + "}"
         ini.write()
 
     from liesl.cli.lsl_api import print_config
@@ -122,11 +130,9 @@ def show(args):
     kwargs = vars(args)
     kwargs["channel"] = kwargs.get("channel", 0)
     if args.backend == "mpl":
-        from liesl.show.mpl import main
+        from liesl.show.mpl import show
     elif args.backend == "ascii":
-        from liesl.show.textplot import main
-    else:
-        raise ValueError(f"Backend {args.backend} not available")
+        from liesl.show.textplot import show
 
     del kwargs["backend"]
     del kwargs["subcommand"]
@@ -134,7 +140,7 @@ def show(args):
     for k, v in kwargs.items():
         if v is not None:
             arguments[k] = v
-    return main(**arguments)
+    return show(**arguments)
 
 
 def mock(args):
@@ -171,8 +177,15 @@ def start(args, unknown):
         return do_list(args)
 
 
-def format_help(parser) -> str:
-    cb = ".. code-block:: bash\n\n"
+def main():
+    "entry point for console_scripts: liesl"
+    parser = get_parser()
+    args, unknown = parser.parse_known_args()
+    start(args, unknown)
+
+
+def format_help(parser) -> str:  # pragma no cover
+    cb = ".. code-block:: none\n\n"
 
     title = parser.prog + "\n" + "~" * len(parser.prog)
     helpstr = parser.format_help()
@@ -192,18 +205,21 @@ def format_help(parser) -> str:
                 yield "\n\n"
 
 
-def main():
-    "entry point for console_scripts: liesl"
-    parser = get_parser()
-    args, unknown = parser.parse_known_args()
-    start(args, unknown)
+def create_cli_rst(fname: str):  # pragma no cover
+    desc = """
+   
+liesl also offers a command line interface. This interface can be accessed after installation of the package from the terminal, e.g. create a mock LSL outlet producing fake EEG with    
 
+.. code-block:: bash
 
-def create_cli_rst(fname: str):
+   liesl mock --type EEG
+
+"""
     helpstr = format_help(get_parser())
     with open(fname, "w") as f:
         f.write("liesl CLI\n")
         f.write("---------\n")
+        f.write(desc)
         for h in helpstr:
             f.write(h)
 

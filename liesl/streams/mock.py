@@ -51,6 +51,14 @@ class Mock(threading.Thread):
         self.join()
         print("Shutting down")
 
+    def await_running(self):
+        try:
+            self.start()
+        except RuntimeError:
+            pass
+        while not self.is_running:
+            pass
+
     def run(self):
         outlet = StreamOutlet(self.info)
         count = 0.0

@@ -1,7 +1,7 @@
 from pyxdf import load_xdf
 from collections import Counter
 from typing import List, Dict
-from liesl.show.ascii import plot
+from liesl.show.textplot import zoom_plot as plot
 import textwrap
 
 
@@ -9,7 +9,7 @@ def shorten(text: str, width: int, placeholder="..."):
     if len(text) <= width:
         return text
     else:
-        return textwrap.wrap(text, width-len(placeholder))[0] + placeholder
+        return textwrap.wrap(text, width - len(placeholder))[0] + placeholder
 
 
 def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
@@ -33,7 +33,7 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
                 chunk["nbytes"] = _read_varlen_int(f)
             except EOFError:
                 return
-            chunk["tag"] = struct.unpack('<H', f.read(2))[0]
+            chunk["tag"] = struct.unpack("<H", f.read(2))[0]
             if chunk["tag"] == 2:
                 chunk["stream_id"] = struct.unpack("<I", f.read(4))[0]
                 xml = ET.fromstring(f.read(chunk["nbytes"] - 6).decode())
@@ -41,13 +41,12 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
                 yield chunk
             else:
                 f.seek(chunk["nbytes"] - 2, 1)  # skip remaining chunk contents
-            if time.time()-t0 > max_duration:
+            if time.time() - t0 > max_duration:
                 return
 
     chunks = []
     with open_xdf(filename) as f:
-        for chunk in islice(
-                _read_chunks(f, max_duration=max_duration), at_most):
+        for chunk in islice(_read_chunks(f, max_duration=max_duration), at_most):
             chunks.append(chunk)
     return parse_chunks(chunks)
 
@@ -56,7 +55,7 @@ def load_concise(filename: str, at_most=1):
     print(f"\r\nLoading {filename:3}\n")
     line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
     print(line.format("Name", "Type", "Ch", "Fs", "Source"))
-    print('-'*80)
+    print("-" * 80)
     sinfos = peek(filename, at_most=at_most)
     for sinfo in sinfos:
         name = sinfo["name"]
@@ -71,7 +70,7 @@ def load_concise(filename: str, at_most=1):
                 sid = "Unknown"
             sid = shorten(sid, 25)
         except IndexError:
-            sid = '\"\"'
+            sid = '""'
 
         print(line.format(name, typ, str(cc), str(fs), sid))
 
@@ -85,7 +84,7 @@ def main(filename):
     print(f"{hdr:>80}\n")
     line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
     print(line.format("Name", "Type", "Ch", "Fs", "Source"))
-    print('-'*80)
+    print("-" * 80)
     for s in streams:
         name = s["info"]["name"][0]
         typ = s["info"]["type"][0]
@@ -97,7 +96,7 @@ def main(filename):
             sid = s["info"]["source_id"][0]
             sid = shorten(sid, 25)
         except IndexError:
-            sid = '\"\"'
+            sid = '""'
 
         print(line.format(name, typ, cc, fs, sid))
 
@@ -110,21 +109,19 @@ def main(filename):
         if "marker" in typ.lower():
             events = Counter([s[0] for s in s["time_series"]])
             print(line.format(name, "Events"))
-            print('-'*80)
+            print("-" * 80)
             for key, val in events.items():
                 if key == "":
-                    wrapped_key = '\"\"'
+                    wrapped_key = '""'
                 else:
-                    wrapped_key = textwrap.shorten(key, width=70,
-                                                   placeholder="...")
-                alignment = 80-len(wrapped_key)
-                print("{0}{1:>{align}}".format(wrapped_key,
-                                               val, align=alignment))
+                    wrapped_key = textwrap.shorten(key, width=70, placeholder="...")
+                alignment = 80 - len(wrapped_key)
+                print("{0}{1:>{align}}".format(wrapped_key, val, align=alignment))
 
             print()
         else:
             print(line.format(name, "Exemplary data"))
-            print('-'*80)
+            print("-" * 80)
             sz = s["time_series"].shape
             if sz[1]:
                 x = s["time_stamps"]

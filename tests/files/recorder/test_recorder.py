@@ -36,9 +36,7 @@ def test_find_lrcmd_raises():
 
 def test_labrecorder(mock, markermock, tmpdir):
     lr = LabRecorderCLI()
-    # from pathlib import Path
-    # tmpdir = Path("~/Desktop").expanduser()
-    filename = tmpdir / "test.xdf"
+    filename = tmpdir / "recorder_test.xdf"
     streamargs = [{"type": "EEG"}, {"type": "Marker"}]
     filename = lr.start_recording(filename, streamargs)
     time.sleep(3)

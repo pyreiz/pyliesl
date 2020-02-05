@@ -1,8 +1,16 @@
 liesl CLI
 ---------
+
+   
+liesl also offers a command line interface. This interface can be accessed after installation of the package from the terminal, e.g. create a mock LSL outlet producing fake EEG with    
+
+.. code-block:: bash
+
+   liesl mock --type EEG
+
 liesl
 ~~~~~
-.. code-block:: bash
+.. code-block:: none
 
    usage: liesl [-h] {config,list,show,mock,xdf} ...
    
@@ -22,7 +30,7 @@ liesl
 
 liesl config
 ~~~~~~~~~~~~
-.. code-block:: bash
+.. code-block:: none
 
    usage: liesl config [-h] [--default] [--sessionid SESSIONID]
                        [--knownpeers KNOWNPEERS]
@@ -46,7 +54,7 @@ liesl config
 
 liesl list
 ~~~~~~~~~~
-.. code-block:: bash
+.. code-block:: none
 
    usage: liesl list [-h] [--field FIELD]
    
@@ -57,7 +65,7 @@ liesl list
 
 liesl show
 ~~~~~~~~~~
-.. code-block:: bash
+.. code-block:: none
 
    usage: liesl show [-h] [--name NAME] [--type TYPE] [--channel CHANNEL]
                      [--backend {mpl,ascii}] [--frate FRATE]
@@ -74,7 +82,7 @@ liesl show
 
 liesl mock
 ~~~~~~~~~~
-.. code-block:: bash
+.. code-block:: none
 
    usage: liesl mock [-h] [--type TYPE]
    
@@ -85,7 +93,7 @@ liesl mock
 
 liesl xdf
 ~~~~~~~~~
-.. code-block:: bash
+.. code-block:: none
 
    usage: liesl xdf [-h] [--at-most AT_MOST] filename
    

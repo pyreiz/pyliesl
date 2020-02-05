@@ -19,7 +19,7 @@ def test_session_raises(tmpdir, mock, markermock):
         prefix="VvNn", mainfolder=tmpdir, streamargs=streamargs, recorder=Recorder()
     )
     assert session._is_recording == False
-    with session("test"):
+    with session("session_test"):
         time.sleep(3)
         assert session._is_recording == True
         with pytest.raises(FileExistsError):

@@ -5,7 +5,7 @@ from pytest import fixture
 @fixture(scope="session")
 def mock():
     mock = Mock()
-    mock.start()
+    mock.await_running()
     yield mock
     mock.stop()
 
@@ -13,6 +13,6 @@ def mock():
 @fixture(scope="session")
 def markermock():
     mock = MarkerMock()
-    mock.start()
+    mock.await_running()
     yield mock
     mock.stop()
