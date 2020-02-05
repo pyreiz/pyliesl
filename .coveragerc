@@ -1,2 +1,5 @@
 [run]
-omit = liesl/streams/_xmltodict.py
+omit =
+    liesl/streams/_xmltodict.py
+    /opt/*
+    tests/*
