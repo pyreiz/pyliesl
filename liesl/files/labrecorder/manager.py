@@ -35,6 +35,7 @@ def validate(streamargs: List[dict]) -> Set[str]:
     """
     sids = []
     for streamarg in streamargs:
+        print(streamarg)
         sinfo = open_streaminfo(**streamarg)
         if sinfo is not None:
             uid = xml_to_dict(sinfo.as_xml())["info"]["source_id"]

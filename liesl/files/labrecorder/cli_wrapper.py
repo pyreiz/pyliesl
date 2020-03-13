@@ -50,7 +50,7 @@ def find_lrcmd(path_to_cmd: str = None) -> Path:
 
 class LabRecorderCLI:
     """Process based interface for LabRecorderCLI
-        
+
     args
     ----
     path_to_cmd:str
@@ -60,16 +60,16 @@ class LabRecorderCLI:
     Use :meth:`~.start_recording` and :meth:`~.stop_recording` to record a set of streams identified by keyword arguments.
 
     Example::
-                      
+
         filename = '~/Desktop/untitled.xdf'
         streamargs = [{"type":"EEG"},{"type":"Marker"}]
-        streamargs = [{"type":"EEG", "name":"Liesl-Mock-EEG"},              
+        streamargs = [{"type":"EEG", "name":"Liesl-Mock-EEG"},
                       {"type":"Marker"}]
-        lr = LabRecorderCLI()   
-        lr.start_recording(filename, streamargs)       
-        time.sleep(5)    
+        lr = LabRecorderCLI()
+        lr.start_recording(filename, streamargs)
+        time.sleep(5)
         lr.stop_recording()
-        
+
     """
 
     def __init__(self, path_to_cmd: str = None) -> None:
@@ -78,8 +78,8 @@ class LabRecorderCLI:
 
     def bind(self, streamargs: List[dict,] = [None]) -> None:
         """bind a set of required streams to start recording
-        Recording will throw a ConnectionError if these streams are not present 
-        at time of binding or at the time of starting a recording        
+        Recording will throw a ConnectionError if these streams are not present
+        at time of binding or at the time of starting a recording
         """
         self.streamargs = validate(streamargs) if streamargs is not None else None
 
@@ -103,21 +103,17 @@ class LabRecorderCLI:
         streams = []
         for idx, uid in enumerate(self.streamargs):
             stream = '"'
-            prt = f"source_id={uid}"
+            prt = f"source_id='{uid}'"
             stream += prt
             stream += '"'
             streams.append(stream)
 
-        # print(" ".join((str(self.cmd), str(filename), *streams)))
+        cmd = " ".join((str(self.cmd), str(filename), *streams))
+        # print(cmd)
         # start the recording process
-        self.process = Popen(
-            [str(self.cmd), str(filename), *streams],
-            stdin=PIPE,
-            stdout=PIPE,
-            stderr=PIPE,
-            bufsize=1,
-        )
+        self.process = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,)
         peek = self.process.stdout.peek()
+        # print(peek.decode())
         if b"matched no stream" in peek:  # pragma no cover
             # would be already catched by self.validate
             self.stop_recording()

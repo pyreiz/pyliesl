@@ -21,7 +21,7 @@ class Mock(threading.Thread):
         name="Liesl-Mock-EEG",
         type="EEG",
         channel_count=8,
-        nominal_srate=100,
+        nominal_srate=1000,
         channel_format="float32",
         source_id=None,
     ):
