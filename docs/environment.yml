@@ -9,3 +9,4 @@ dependencies:
     - sphinx-autodoc-typehints
     - sphinx-rtd-theme
     - numpy
+    - pyxdf
