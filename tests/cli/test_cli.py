@@ -6,19 +6,6 @@ from liesl.cli.lsl_api import Ini, default_lsl_api_cfg
 import signal
 
 
-@pytest.fixture
-def xdf_file(mock, markermock, tmpdir_factory):
-    lr = LabRecorderCLI()
-    fn = tmpdir_factory.mktemp("data")
-    filename = fn / "test.xdf"
-    streamargs = [{"type": "EEG"}, {"type": "Marker"}]
-    filename = lr.start_recording(filename, streamargs)
-    time.sleep(3)
-    lr.stop_recording()
-    yield filename
-    filename.unlink()
-
-
 def test_cli_main_help():
     p = Popen(["liesl", "-h"], stdout=PIPE, stderr=PIPE)
     o, e = p.communicate()

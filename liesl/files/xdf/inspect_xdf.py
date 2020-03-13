@@ -1,3 +1,8 @@
+"""
+Peeking
+-------
+"""
+
 from pyxdf import load_xdf
 from collections import Counter
 from typing import List, Dict

@@ -1,15 +1,13 @@
 SHELL := /bin/bash #to be able to execute `source`
 
-.PHONY: build
+.PHONY: build clean test upload docs
 build: clean
 	python setup.py  sdist bdist_wheel
 
-.PHONY: clean
 clean:
 	rm -rf dist */*.egg-info *.egg-info  build
 	rm -rf .test
 
-.PHONY: test
 test: build
 	twine check dist/*
 	# twine upload --repository-url https://test.pypi.org/legacy/ dist/* --verbose
@@ -19,7 +17,9 @@ test: build
 	pip install dist/*.whl
 	pytest
 
-.PHONY: upload
 upload: build
 	twine check dist/*
 	twine upload dist/* --verbose
+
+docs:
+	make -C docs html

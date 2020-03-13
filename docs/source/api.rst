@@ -45,6 +45,13 @@ Recording
 .. automodule:: liesl.files.session
    :members: Session, Recorder
 
+Loading
+*******
 
+.. automodule:: liesl.files.xdf.load
+   :members: XDFFile, XDFStream
+   
+.. automodule:: liesl.files.xdf.inspect_xdf
+   :members: peek
 
 
