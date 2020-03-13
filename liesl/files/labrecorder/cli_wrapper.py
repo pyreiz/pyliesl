@@ -111,7 +111,17 @@ class LabRecorderCLI:
         cmd = " ".join((str(self.cmd), str(filename), *streams))
         # print(cmd)
         # start the recording process
-        self.process = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,)
+
+        if "win" in sys.platform:
+            self.process = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,)
+        else:
+            self.process = Popen(
+                [self.cmd, str(filename), *streams],
+                stdin=PIPE,
+                stdout=PIPE,
+                stderr=PIPE,
+                bufsize=1,
+            )
         peek = self.process.stdout.peek()
         # print(peek.decode())
         if b"matched no stream" in peek:  # pragma no cover

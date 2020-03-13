@@ -61,7 +61,7 @@ def rb(mock):
 
 
 def test_ringbuffer_properties(rb):
-    time.sleep(1)
+    time.sleep(2)
     assert rb.is_running == True
     assert rb.is_full == True
     rb.reset()
@@ -73,14 +73,14 @@ def test_ringbuffer_methods(rb):
     rb.stop()
     chunk, tstamps = rb.get()
     chunk2 = rb.get_data()
-    assert np.round(np.median(np.diff(tstamps[:, 0])), 2) == 0.01
+    assert np.round(np.median(np.diff(tstamps[:, 0])), 3) == 0.001
     assert np.all((chunk - chunk2) == 0)
 
 
 def test_ringbuffer(mock):
     sinfo = get_streaminfos_matching(name="Liesl-Mock-EEG")[0]
     rb = RingBuffer(streaminfo=sinfo, duration_in_ms=1000)
-    assert rb.fs == 100
-    assert rb.max_shape == (100, 8)
+    assert rb.fs == 1000
+    assert rb.max_shape == (1000, 8)
     assert rb.shape == (0, 8)
 
