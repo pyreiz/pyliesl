@@ -26,11 +26,21 @@ and record or load `xdf files <https://github.com/sccn/xdf/wiki/Specifications>`
 Installation
 ------------
 
+Stable
+******
 .. code-block:: bash
 
-    git clone git@github.com:pyreiz/pyliesl.git
+    pip install liesl
+    
+
+Development
+***********
+
+.. code-block:: bash
+
+    git clone https://github.com/pyreiz/pyliesl.git
     cd pyliesl
-    pip install .
+    pip install -e .
 
 Basic Usage
 -----------

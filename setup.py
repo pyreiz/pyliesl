@@ -1,15 +1,24 @@
 from setuptools import setup, find_packages
+from pathlib import Path
+
+with (Path(__file__).parent / "readme.md").open() as f:
+    long_description = f.read()
+
+with (Path(__file__).parent / "requirements.txt").open() as f:
+    install_requires = f.readlines()
 
 setup(
     name="liesl",
-    version="0.3.4",
+    version="0.3.4.3",
     description="Toolbox to receive and process LSL streams and handle XDF files.",
-    long_description="A Python Toolbox to receive and process labstreaminglayer streams and handle XDF files",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Robert Guggenberger",
     author_email="robert.guggenberger@uni-tuebingen.de",
     url="https://github.com/pyreiz/pyliesl",
     packages=find_packages(exclude=["test*"]),
     include_package_data=True,
+    install_requires=install_requires,
     download_url="https://github.com/pyreiz/pyliesl",
     license="MIT",
     entry_points={"console_scripts": ["liesl=liesl.cli.main:main"],},
