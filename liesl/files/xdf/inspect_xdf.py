@@ -8,6 +8,7 @@ from collections import Counter
 from typing import List, Dict
 from liesl.show.textplot import zoom_plot as plot
 import textwrap
+from math import inf
 
 
 def shorten(text: str, width: int, placeholder="..."):
@@ -56,12 +57,12 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
     return parse_chunks(chunks)
 
 
-def load_concise(filename: str, at_most=1):
+def load_concise(filename: str, at_most=1, timeout: float = inf):
     print(f"\r\nLoading {filename:3}\n")
     line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
     print(line.format("Name", "Type", "Ch", "Fs", "Source"))
     print("-" * 80)
-    sinfos = peek(filename, at_most=at_most)
+    sinfos = peek(filename, at_most=at_most, max_duration=timeout)
     for sinfo in sinfos:
         name = sinfo["name"]
         typ = sinfo["type"]

@@ -5,6 +5,7 @@ Command Line Interface
 """
 import json
 import argparse
+import sys
 
 
 def get_parser():
@@ -71,8 +72,15 @@ def get_parser():
     parser_xdf.add_argument("filename", help="filename")
     parser_xdf.add_argument(
         "--at-most",
-        type=int,
-        help="only peek into the file, looking for at most N streaminfos. If searching takes too long, returns after a certain time anyways. Useful for example if file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file",
+        type=float,
+        help="return lastest once that many streams were found, regardloss of how long it takes. Useful if file is very large, and can prevent parsing the whole file. defaults to sys.maxsize because integers are required, but unbound in python",
+        default=sys.maxsize,
+    )
+    parser_xdf.add_argument(
+        "--timeout",
+        type=float,
+        help="return latest after this many seconds, regardless of how many streams were found. Useful if the file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file. defaults to 1 second",
+        default=1,
     )
 
     return parser
@@ -80,14 +88,10 @@ def get_parser():
 
 def xdf(args):
     "execute xdf subcommand"
-    if not args.at_most:
-        from liesl.files.xdf.inspect_xdf import main as print_xdf
+    from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
 
-        print_xdf(args.filename)
-    else:
-        from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
-
-        print_xdf(args.filename, args.at_most)
+    print(args)
+    print_xdf(args.filename, args.at_most, args.timeout)
 
 
 def config(args):
