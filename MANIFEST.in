@@ -1,1 +1,3 @@
 include liesl/files/labrecorder/lib/*
+include readme.md
+include requirements.txt

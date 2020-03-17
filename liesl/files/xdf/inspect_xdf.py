@@ -58,7 +58,7 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
 
 
 def load_concise(filename: str, at_most=1, timeout: float = inf):
-    print(f"\r\nLoading {filename:3}\n")
+    print(f"\r\nLoading {filename:3} concisely\n")
     line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
     print(line.format("Name", "Type", "Ch", "Fs", "Source"))
     print("-" * 80)
@@ -84,13 +84,20 @@ def load_concise(filename: str, at_most=1, timeout: float = inf):
 
 
 def main(filename):
+    print("main is deprecated, use load_fully instead")
+    return load_fully(filename)
+
+
+def load_fully(filename):
+
+    print(f"\r\nLoading {filename:3} fully\n")
     streams, info = load_xdf(filename)
     hdr = "XDF Fileversion " + info["info"]["version"][0]
-    print(f"\r\nLoading {filename:3}\n")
     print(f"{hdr:>80}\n")
     line = "{0:<25s}{1:^20s}{2:4s}{3:^5s}{4:>26s}"
     print(line.format("Name", "Type", "Ch", "Fs", "Source"))
     print("-" * 80)
+
     for s in streams:
         name = s["info"]["name"][0]
         typ = s["info"]["type"][0]

@@ -6,6 +6,7 @@ Command Line Interface
 import json
 import argparse
 import sys
+from math import inf
 
 
 def get_parser():
@@ -71,15 +72,17 @@ def get_parser():
     parser_xdf = subparsers.add_parser("xdf", help=helpstr)
     parser_xdf.add_argument("filename", help="filename")
     parser_xdf.add_argument(
+        "-a",
         "--at-most",
-        type=float,
-        help="return lastest once that many streams were found, regardloss of how long it takes. Useful if file is very large, and can prevent parsing the whole file. defaults to sys.maxsize because integers are required, but unbound in python",
+        type=int,
+        help="return lastest once that many streams were found, regardloss of how long it takes. Useful if file is very large, and can prevent parsing the whole file. defaults to sys.maxsize because integers are required, but unbound in python. Set it to 0' to load the file completely",
         default=sys.maxsize,
     )
     parser_xdf.add_argument(
+        "-t",
         "--timeout",
         type=float,
-        help="return latest after this many seconds, regardless of how many streams were found. Useful if the file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file. defaults to 1 second",
+        help="return latest after this many seconds, regardless of how many streams were found. Useful if the file is very large, and you are sure you started recording all streams at the beginnging, as this prevents parsing the whole file. defaults to 1 second. Set it to 'inf' to load the file completely",
         default=1,
     )
 
@@ -88,10 +91,13 @@ def get_parser():
 
 def xdf(args):
     "execute xdf subcommand"
-    from liesl.files.xdf.inspect_xdf import load_concise as print_xdf
+    from liesl.files.xdf.inspect_xdf import load_concise
+    from liesl.files.xdf.inspect_xdf import load_fully
 
-    print(args)
-    print_xdf(args.filename, args.at_most, args.timeout)
+    if args.at_most == 0 or args.timeout == inf:
+        load_fully(args.filename)
+    else:
+        load_concise(args.filename, args.at_most, args.timeout)
 
 
 def config(args):
