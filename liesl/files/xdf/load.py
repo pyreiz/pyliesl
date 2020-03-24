@@ -44,7 +44,10 @@ class XDFStream:
     def channel_labels(self) -> Union[List[str], None]:
         "get the channel labels as a list of strings"
         if self.desc is not None:
-            return [i["label"] for i in self.desc["channels"]["channel"]]
+            try:
+                return [i["label"] for i in self.desc["channels"]["channel"]]
+            except TypeError:
+                return [self.desc["channels"]["channel"]['label']]
         else:
             return None
 
