@@ -20,7 +20,7 @@ def markermock():
     mock.stop()
 
 
-@fixture
+@fixture(scope="session")
 def xdf_file(mock, markermock, tmpdir_factory):
     lr = LabRecorderCLI()
     fn = tmpdir_factory.mktemp("data")
