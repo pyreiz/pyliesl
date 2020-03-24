@@ -14,7 +14,7 @@ def test_cli_main_help():
 
 def test_cli_xdf(xdf_file):
     assert xdf_file.exists()
-    p = Popen(["liesl", "xdf", xdf_file], stdout=PIPE, stderr=PIPE)
+    p = Popen(["liesl", "xdf", xdf_file, "--timeout", 30], stdout=PIPE, stderr=PIPE)    
     o, e = p.communicate()
     assert f"Loading {xdf_file}" in o.decode()
     assert "Liesl-Mock-EEG" in o.decode()
