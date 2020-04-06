@@ -47,7 +47,7 @@ class XDFStream:
             try:
                 return [i["label"] for i in self.desc["channels"]["channel"]]
             except TypeError:
-                return [self.desc["channels"]["channel"]['label']]
+                return [self.desc["channels"]["channel"]["label"]]
         else:
             return None
 
@@ -117,7 +117,7 @@ class XDFStream:
 
 
 # -----------------------------------------------------------------------------
-def XDFFile(filename: Union[Path, str]) -> Dict[str, XDFStream]:
+def XDFFile(filename: Union[Path, str], verbose=False) -> Dict[str, XDFStream]:
     """load an :code:`xdf`-file and return a dictionary of its streams
 
     args
@@ -134,7 +134,8 @@ def XDFFile(filename: Union[Path, str]) -> Dict[str, XDFStream]:
     streams, _ = pyxdf.load_xdf(filename=str(filename))
     collection: Dict[str, XDFStream] = dict()
     for stream in streams:
-        print("Parsing ", stream["info"]["name"][0])
+        if not verbose:
+            print("XDFFile: Parsing", stream["info"]["name"][0])
         x = XDFStream(stream)
         collection[x.name] = x
     return collection
