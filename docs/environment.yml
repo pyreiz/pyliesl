@@ -1,12 +1,12 @@
-
-name: example-environment
+name: documentation-environment
 channels:
   - tstenner
 dependencies:
   - pylsl
   - pip:
-    - m2r
-    - sphinx-autodoc-typehints
-    - sphinx-rtd-theme
-    - numpy
-    - pyxdf
+      - m2r
+      - sphinx-autodoc-typehints
+      - sphinx-rtd-theme
+      - numpy
+      - pyxdf
+      - Sphinx==2.2.1
