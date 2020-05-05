@@ -137,5 +137,6 @@ def XDFFile(filename: Union[Path, str], verbose=False) -> Dict[str, XDFStream]:
         if not verbose:
             print("XDFFile: Parsing", stream["info"]["name"][0])
         x = XDFStream(stream)
+        x.origin = str(filename)
         collection[x.name] = x
     return collection
