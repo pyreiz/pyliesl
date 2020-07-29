@@ -22,6 +22,23 @@ def recover_info(stream: StreamInlet) -> StreamInfo:
     )
 
 
+def print_available_streams_fields(fields: List[str]):
+    """prints a specific field from all available streams
+    Example::
+
+        import liesl
+        liesl.streams.finder.print_available_streams_fields()
+    """
+    available_streams = pylsl.resolve_streams()
+    count = 0
+    for a in available_streams:
+        print("Stream #{0:3.0f}".format(count))
+        count += 1
+        for field in fields:
+            value = a.__getattribute__(field)()
+            print("{0} = {1}".format(field, value))
+
+
 def print_available_streams():
     """prints all available streams in their xml form
     

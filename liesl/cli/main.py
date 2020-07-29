@@ -7,6 +7,7 @@ import json
 import argparse
 import sys
 from math import inf
+from ast import literal_eval
 
 
 def get_parser():
@@ -41,7 +42,13 @@ def get_parser():
     # list --------------------------------------------------------------------
     helpstr = """list available LSL streams"""
     parser_list = subparsers.add_parser("list", help=helpstr)
-    parser_list.add_argument("--field", help="which field to print", default="any")
+    parser_list.add_argument(
+        "--field",
+        help="""which field to print. For example:    
+                    liesl list --field '["name", "source_id"]'""",
+        default="['any']",
+        type=literal_eval,
+    )
 
     # show --------------------------------------------------------------------
     helpstr = """Visualize a specific LSL streams"""
@@ -169,9 +176,15 @@ def mock(args):
 
 def do_list(args):
     "execute subcommand list"
-    from liesl.streams.finder import print_available_streams
+    if args.field == ["any"]:
+        from liesl.streams.finder import print_available_streams
 
-    return print_available_streams()
+        return print_available_streams()
+    else:
+        pass
+        from liesl.streams.finder import print_available_streams_fields
+
+        return print_available_streams_fields(args.field)
 
 
 def start(args, unknown):
