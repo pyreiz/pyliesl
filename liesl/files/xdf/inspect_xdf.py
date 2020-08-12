@@ -52,7 +52,9 @@ def peek(filename: str, at_most=1, max_duration=10) -> List[Dict]:
 
     chunks = []
     with open_xdf(filename) as f:
-        for chunk in islice(_read_chunks(f, max_duration=max_duration), at_most):
+        for chunk in islice(
+            _read_chunks(f, max_duration=max_duration), at_most
+        ):
             chunks.append(chunk)
     return parse_chunks(chunks)
 
@@ -72,8 +74,7 @@ def load_concise(filename: str, at_most=1, timeout: float = inf):
         typ = shorten(typ, 20)
         try:
             sid = sinfo["source_id"]
-            if sid is None:
-                sid = "Unknown"
+            sid = sid if sid else "Unknown"
             sid = shorten(sid, 25)
         except IndexError:
             sid = '""'
@@ -102,11 +103,14 @@ def load_fully(filename):
         name = s["info"]["name"][0]
         typ = s["info"]["type"][0]
         cc = s["info"]["channel_count"][0]
-        fs = s["info"]["nominal_srate"][0]
+        fs = float(s["info"]["nominal_srate"][0])
+        fs = str(int(fs)) if int(fs) == fs else str(fs)
         name = shorten(name, 25)
         typ = shorten(typ, 20)
         try:
             sid = s["info"]["source_id"][0]
+            # can be None in edge cases
+            sid = sid if sid else "Unknown"
             sid = shorten(sid, 25)
         except IndexError:
             sid = '""'
@@ -127,9 +131,13 @@ def load_fully(filename):
                 if key == "":
                     wrapped_key = '""'
                 else:
-                    wrapped_key = textwrap.shorten(key, width=70, placeholder="...")
+                    wrapped_key = textwrap.shorten(
+                        key, width=70, placeholder="..."
+                    )
                 alignment = 80 - len(wrapped_key)
-                print("{0}{1:>{align}}".format(wrapped_key, val, align=alignment))
+                print(
+                    "{0}{1:>{align}}".format(wrapped_key, val, align=alignment)
+                )
 
             print()
         else:
