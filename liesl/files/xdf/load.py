@@ -106,6 +106,12 @@ class XDFStream:
         return float(self._stream["info"]["created_at"][0])
 
     @property
+    @lru_cache(maxsize=1)
+    def hostname(self):
+        "get the hostname of the machine where the streams was created as str"
+        return self._stream["info"]["hostname"][0]
+
+    @property
     def time_series(self) -> ndarray:
         "get the time_series of the stream, i.e its data as ndarray"
         return self._stream["time_series"]
@@ -133,10 +139,16 @@ def XDFFile(filename: Union[Path, str], verbose=False) -> Dict[str, XDFStream]:
     """
     streams, _ = pyxdf.load_xdf(filename=str(filename))
     collection: Dict[str, XDFStream] = dict()
+    doublettes: Dict[str, int] = dict()
     for stream in streams:
         if not verbose:
             print("XDFFile: Parsing", stream["info"]["name"][0])
         x = XDFStream(stream)
         x.origin = str(filename)
-        collection[x.name] = x
+        doublettes[x.name] = doublettes.get(x.name, 0) + 1
+        if doublettes[x.name] == 1:
+            collection[x.name] = x
+        else:
+            collection[x.name + str(doublettes[x.name])] = x
+
     return collection
