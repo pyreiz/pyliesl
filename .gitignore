@@ -11,3 +11,4 @@ dist/*
 htmlcov/*
 docs/build/*
 docs/source/_autosummary/*
+*.xdf
