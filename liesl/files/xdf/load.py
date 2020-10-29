@@ -124,7 +124,8 @@ class XDFStream:
     def __repr__(self) -> str:
         try:
             return f"XDFStream(name={self.name}, type={self.type}, hostname={self.hostname}, created_at={self.created_at}, duration={self.time_stamps[0]-self.time_stamps[1]}, chan_count={self.channel_count}, )"
-        except IndexError:
+        # unless there is only one sample
+        except IndexError:  # pragma: no cover
             return f"XDFStream(name={self.name}, type={self.type}, hostname={self.hostname}, created_at={self.created_at}, chan_count={self.channel_count}, )"
 
 
