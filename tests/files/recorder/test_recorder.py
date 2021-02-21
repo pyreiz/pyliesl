@@ -35,13 +35,15 @@ def test_find_lrcmd_raises():
 
 
 def test_labrecorder(mock, markermock, tmpdir):
+    from liesl.api import XDFFile
     lr = LabRecorderCLI()
     filename = tmpdir / "recorder_test.xdf"
     streamargs = [{"type": "EEG"}, {"type": "Marker"}]
     filename = lr.start_recording(filename, streamargs)
-    time.sleep(3)
+    time.sleep(3)    
     lr.stop_recording()
     assert filename.exists()
+    assert len(XDFFile(filename)) == 2
     if filename.exists():
         filename.unlink()
 
