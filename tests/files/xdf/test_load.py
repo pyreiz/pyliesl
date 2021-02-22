@@ -4,9 +4,7 @@ from liesl.api import XDFFile
 
 def test_xdffile_class(xdf_file):
     xdfs = XDFFile(xdf_file)
-    assert (
-        len(xdfs) == 4
-    )  # this is due to a bug on pytest fixtures, which creates two streams each
+    assert len(xdfs) == 2
 
     key = "Liesl-Mock-EEG"
     xdf = xdfs[key]

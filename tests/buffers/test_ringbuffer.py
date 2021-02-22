@@ -4,6 +4,7 @@ import numpy as np
 from numpy.random import random
 from liesl.buffers.ringbuffer import SimpleRingBuffer, RingBuffer
 from liesl.streams.finder import get_streaminfos_matching
+from sys import platform
 
 
 def test_simpleringbuffer():
@@ -36,6 +37,9 @@ def test_simpleringbuffer_overflow(capsys):
     assert "Overflow" in cs.out
 
 
+@pytest.mark.skipif(
+    platform.startswith("win"), reason="jitter on windows during test"
+)
 def test_simpleringbuffer_speed():
     import time
 
@@ -68,6 +72,9 @@ def test_ringbuffer_properties(rb):
     assert rb.is_full == False
 
 
+@pytest.mark.skipif(
+    platform.startswith("win"), reason="jitter on windows during test"
+)
 def test_ringbuffer_methods(rb):
     time.sleep(1)
     rb.stop()
