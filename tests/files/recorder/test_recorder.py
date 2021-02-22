@@ -34,16 +34,53 @@ def test_find_lrcmd_raises():
         find_lrcmd("~")
 
 
-def test_labrecorder(mock, markermock, tmpdir):
+def test_labrecorder_two_streams(mock, markermock, tmpdir):
     from liesl.api import XDFFile
+
     lr = LabRecorderCLI()
     filename = tmpdir / "recorder_test.xdf"
     streamargs = [{"type": "EEG"}, {"type": "Marker"}]
     filename = lr.start_recording(filename, streamargs)
-    time.sleep(3)    
+    time.sleep(3)
     lr.stop_recording()
     assert filename.exists()
     assert len(XDFFile(filename)) == 2
+    if filename.exists():
+        filename.unlink()
+
+
+@pytest.mark.parametrize("stream", ["EEG", "Marker"])
+def test_labrecorder_one_when_two(stream, mock, markermock, tmpdir):
+    from liesl.api import XDFFile
+
+    lr = LabRecorderCLI()
+    filename = tmpdir / f"recorder_test_{stream}.xdf"
+    streamargs = [{"type": stream}]
+    filename = lr.start_recording(filename, streamargs)
+    time.sleep(3)
+    lr.stop_recording()
+    assert filename.exists()
+    xdf = XDFFile(filename)
+    assert stream in xdf[list(xdf.keys())[0]].type
+    assert len(xdf) == 1
+    if filename.exists():
+        filename.unlink()
+
+
+@pytest.mark.parametrize("stream", ["EEG"])
+def test_labrecorder_one_when_one(stream, mock, tmpdir):
+    from liesl.api import XDFFile
+
+    lr = LabRecorderCLI()
+    filename = tmpdir / f"recorder_test_{stream}.xdf"
+    streamargs = [{"type": stream}]
+    filename = lr.start_recording(filename, streamargs)
+    time.sleep(3)
+    lr.stop_recording()
+    assert filename.exists()
+    xdf = XDFFile(filename)
+    assert stream in xdf[list(xdf.keys())[0]].type
+    assert len(xdf) == 1
     if filename.exists():
         filename.unlink()
 
