@@ -19,6 +19,5 @@ def test_xdffile_class(xdf_file):
     assert xdf.time_series.shape[1] == 8
     assert len(xdf.time_stamps.shape) == 1
     assert xdf.nominal_srate == 1000.0
-    assert xdf.hostname == xdfs["Liesl-Mock-EEG2"].hostname
     assert "Liesl-Mock-EEG" in repr(xdf)
 
