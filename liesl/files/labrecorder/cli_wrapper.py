@@ -16,7 +16,9 @@ import sys
 
 def find_lrcmd_os(platform: str) -> Path:
     "return the default path to labrecorder for this platform"
-    root = Path(pkg_resources.resource_filename("liesl", "files/labrecorder/lib"))
+    root = Path(
+        pkg_resources.resource_filename("liesl", "files/labrecorder/lib")
+    )
     if "linux" in platform:
         path_to_cmd = root / "LabRecorderCLI"
     elif "win" in platform:
@@ -81,7 +83,9 @@ class LabRecorderCLI:
         Recording will throw a ConnectionError if these streams are not present
         at time of binding or at the time of starting a recording
         """
-        self.streamargs = validate(streamargs) if streamargs is not None else None
+        self.streamargs = (
+            validate(streamargs) if streamargs is not None else None
+        )
 
     def start_recording(
         self,
@@ -99,28 +103,43 @@ class LabRecorderCLI:
         filename = Run(filename)
         filename.parent.mkdir(exist_ok=True, parents=True)
 
-        # start encoding the command
-        streams = []
-        for idx, uid in enumerate(self.streamargs):
-            stream = '"'
-            prt = f"source_id='{uid}'"
-            stream += prt
-            stream += '"'
-            streams.append(stream)
-
-        cmd = " ".join((str(self.cmd), str(filename), *streams))
-        # print(cmd)
-        # start the recording process
-
         if "win" in sys.platform:
-            self.process = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,)
-        else:
+            # start encoding the command
+            streams = []
+            for idx, uid in enumerate(self.streamargs):
+                stream = '"'
+                prt = f"source_id='{uid}'"
+                stream += prt
+                stream += '"'
+                streams.append(stream)
+
+            cmd = " ".join((str(self.cmd), str(filename), *streams))
+            # print(cmd)
+            # start the recording process
+
             self.process = Popen(
-                [self.cmd, str(filename), *streams],
+                cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,
+            )
+        else:  # linux
+            streams = []
+            for idx, uid in enumerate(self.streamargs):
+                stream = '"'
+                prt = f"source_id='{uid}'"
+                stream += prt
+                stream += '"'
+                streams.append(stream)
+            cmd = [str(self.cmd), str(filename), *streams]
+            cmd = " ".join((str(self.cmd), str(filename)))
+            for s in streams:
+                cmd += f" {s}"
+            print(cmd)
+            self.process = Popen(
+                cmd,
                 stdin=PIPE,
                 stdout=PIPE,
                 stderr=PIPE,
                 bufsize=1,
+                shell=True,
             )
         peek = self.process.stdout.peek()
         # print(peek.decode())
