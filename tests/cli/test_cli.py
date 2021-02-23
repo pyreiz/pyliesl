@@ -21,9 +21,10 @@ def test_cli_xdf(xdf_file):
         stderr=PIPE,
     )
     o, e = p.communicate()
-    assert f"Loading {xdf_file}" in o.decode()
-    assert "Liesl-Mock-EEG" in o.decode()
-    assert "Liesl-Mock-Marker" in o.decode()
+    out = o.decode()
+    assert f"Loading {xdf_file}" in out
+    assert "Liesl-Mock-EEG" in out
+    assert "Liesl-Mock-Marker" in out
 
 
 @pytest.mark.skipif(

@@ -103,36 +103,22 @@ class LabRecorderCLI:
         filename = Run(filename)
         filename.parent.mkdir(exist_ok=True, parents=True)
 
+        # start encoding the command
+        streams = []
+        for idx, uid in enumerate(self.streamargs):
+            stream = '"'
+            prt = f"source_id='{uid}'"
+            stream += prt
+            stream += '"'
+            streams.append(stream)
+
+        cmd = " ".join((str(self.cmd), str(filename), *streams))
+
         if "win" in sys.platform:
-            # start encoding the command
-            streams = []
-            for idx, uid in enumerate(self.streamargs):
-                stream = '"'
-                prt = f"source_id='{uid}'"
-                stream += prt
-                stream += '"'
-                streams.append(stream)
-
-            cmd = " ".join((str(self.cmd), str(filename), *streams))
-            # print(cmd)
-            # start the recording process
-
             self.process = Popen(
                 cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,
             )
         else:  # linux
-            streams = []
-            for idx, uid in enumerate(self.streamargs):
-                stream = '"'
-                prt = f"source_id='{uid}'"
-                stream += prt
-                stream += '"'
-                streams.append(stream)
-            cmd = [str(self.cmd), str(filename), *streams]
-            cmd = " ".join((str(self.cmd), str(filename)))
-            for s in streams:
-                cmd += f" {s}"
-            print(cmd)
             self.process = Popen(
                 cmd,
                 stdin=PIPE,
