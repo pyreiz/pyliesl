@@ -109,7 +109,10 @@ class XDFStream:
     @lru_cache(maxsize=1)
     def hostname(self):
         "get the hostname of the machine where the streams was created as str"
-        return self._stream["info"]["hostname"][0]
+        try:
+            return self._stream["info"]["hostname"][0]
+        except IndexError:
+            return "NotImplemented"
 
     @property
     def time_series(self) -> ndarray:
