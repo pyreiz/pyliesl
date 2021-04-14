@@ -14,3 +14,4 @@ from liesl.streams.convert import inlet_to_dict, get_channel_map
 from liesl.files.run import Run
 from liesl.files.session import Session, Recorder
 from liesl.files.xdf.load import XDFFile
+from liesl.files.xdf.manip import find_closest_timestamp_index
