@@ -147,6 +147,7 @@ def XDFFile(filename: Union[Path, str], verbose=False) -> Dict[str, XDFStream]:
         a collection of all :class:`~.XDFStream` s in the file. These can be indexed by their respective name
 
     """
+    filename = Path(filename).expanduser()
     streams, _ = pyxdf.load_xdf(filename=str(filename))
     collection: Dict[str, XDFStream] = dict()
     doublettes: Dict[str, int] = dict()
