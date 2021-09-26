@@ -19,14 +19,13 @@ def find_lrcmd_os(platform: str) -> Path:
     root = Path(
         pkg_resources.resource_filename("liesl", "files/labrecorder/lib")
     )
-    if "linux" in platform:
-        path_to_cmd = root / "LabRecorderCLI"
-    elif "win" in platform:
+    if platform.startswith('win'):
         path_to_cmd = root / "LabRecorderCLI.exe"
+    elif platform.startswith(('linux', 'darwin')):
+        path_to_cmd = root / "LabRecorderCLI"
     else:
         raise NotImplementedError()
-    if path_to_cmd.exists() == False:
-        path_to_cmd = "~"
+
     return path_to_cmd
 
 
@@ -39,10 +38,10 @@ def find_lrcmd(path_to_cmd: str = None) -> Path:
     if not path_to_cmd.exists():
         raise FileNotFoundError("Path to command does not exist")
 
-    if "linux" in sys.platform:
+    if sys.platform.startswith(('linux', 'darwin')):
         if path_to_cmd.name == "LabRecorderCLI":
             return path_to_cmd
-    elif "win" in sys.platform:
+    elif sys.platform.startswith('win'):
         if path_to_cmd.name == "LabRecorderCLI.exe":
             return path_to_cmd
 
@@ -114,11 +113,11 @@ class LabRecorderCLI:
 
         cmd = " ".join((str(self.cmd), str(filename), *streams))
 
-        if "win" in sys.platform:
+        if sys.platform.startswith('win'):
             self.process = Popen(
                 cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, bufsize=1,
             )
-        else:  # linux
+        else:  # linux, mac
             self.process = Popen(
                 cmd,
                 stdin=PIPE,
