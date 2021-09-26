@@ -21,8 +21,10 @@ def find_lrcmd_os(platform: str) -> Path:
     )
     if platform.startswith('win'):
         path_to_cmd = root / "LabRecorderCLI.exe"
-    elif platform.startswith(('linux', 'darwin')):
+    elif platform.startswith('linux'):
         path_to_cmd = root / "LabRecorderCLI"
+    elif platform.startswith('darwin'):
+        path_to_cmd = root / "LabRecorderCLI_mac"
     else:
         raise NotImplementedError()
 
@@ -39,7 +41,7 @@ def find_lrcmd(path_to_cmd: str = None) -> Path:
         raise FileNotFoundError("Path to command does not exist")
 
     if sys.platform.startswith(('linux', 'darwin')):
-        if path_to_cmd.name == "LabRecorderCLI":
+        if path_to_cmd.name.startswith("LabRecorderCLI"):
             return path_to_cmd
     elif sys.platform.startswith('win'):
         if path_to_cmd.name == "LabRecorderCLI.exe":
