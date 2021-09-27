@@ -42,8 +42,8 @@ jobs:
           pip install coveralls
           coveralls
 
-  winbuild:
-    runs-on: windows-latest
+  winandmacbuild:
+    runs-on: [windows-latest, macos-latest]
 
     steps:
       - uses: actions/checkout@v1
