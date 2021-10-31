@@ -30,10 +30,7 @@ jobs:
           flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
       - name: Test with pytest
         run: |
-          pip install coverage
-          pip install pytest-cov
-          pip install pytest
-          pip install tempenv
+          pip install -r tests/requirements.txt
           pytest
       - name: Cache coverage report
         uses: actions/cache@v2
@@ -76,9 +73,7 @@ jobs:
           pip install .
       - name: Test with pytest
         run: |
-          pip install coverage
-          pip install pytest-cov
-          pip install pytest
+          pip install -r tests/requirements.txt
           pytest
 
   winbuild:
@@ -97,7 +92,5 @@ jobs:
           pip install .
       - name: Test with pytest
         run: |
-          pip install coverage
-          pip install pytest-cov
-          pip install pytest
+          pip install -r tests/requirements.txt
           pytest
