@@ -20,7 +20,7 @@ def test_find_lrcmd_os_raises():
         find_lrcmd_os("mac")
 
 
-@pytest.mark.parametrize("platform", ["windows", "linux"])
+@pytest.mark.parametrize("platform", ["windows", "linux", "darwin"])
 def test_find_lrcmd(monkeypatch, platform):
     import sys
 

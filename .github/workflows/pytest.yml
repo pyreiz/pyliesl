@@ -71,6 +71,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install .
+          conda install -c conda-forge liblsl
       - name: Test with pytest
         run: |
           pip install -r tests/requirements.txt
