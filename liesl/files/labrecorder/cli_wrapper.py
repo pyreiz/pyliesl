@@ -22,9 +22,9 @@ def find_lrcmd_os(platform: str) -> Path:
     if platform.startswith("win"):
         path_to_cmd = root / "LabRecorderCLI.exe"
     elif platform.startswith("linux"):
-        path_to_cmd = root / "LabRecorderCLI"
+        path_to_cmd = root / "LabRecorderCLI.linux"
     elif platform.startswith("darwin"):
-        path_to_cmd = root / "LabRecorderCLI_mac"
+        path_to_cmd = root / "LabRecorderCLI.mac"
     else:
         raise NotImplementedError()
 
