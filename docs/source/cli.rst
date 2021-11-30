@@ -87,9 +87,11 @@ liesl mock
    usage: liesl mock [-h] [--type TYPE]
    
    optional arguments:
-     -h, --help   show this help message and exit
-     --type TYPE  type of the stream
-     --file FILE  File that will be used as mock data
+     -h, --help       show this help message and exit
+     --type TYPE      type of the stream
+     --file FILE      file in xdf format that will be used as mock data
+     --stream STREAM  name of stream that will be used as mock data (only when file specified)
+
 
 
 liesl xdf

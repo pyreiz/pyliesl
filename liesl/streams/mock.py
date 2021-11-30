@@ -83,6 +83,54 @@ class Mock(threading.Thread):
 
     def __str__(self):
         return self.info.as_xml()
+def _streams_to_string(streams_as_dict):
+    output =""
+    for idx, stream in enumerate(streams_as_dict):
+        output += f"{stream}, "
+    return output[:-2]
+
+def stream_from_file(file, streamname=None):
+    from pyxdf import load_xdf
+    from pylsl import StreamInfo
+    streams, i = load_xdf(file)
+    print(f"Loaded file {file}")
+    streams_as_dict = {}
+    for ix, stream in enumerate(streams):
+        streamname_from_recorded = stream['info']['name'][0]
+        streams_as_dict[streamname_from_recorded] = stream
+    if streamname is None:
+        while True:
+            print("Select a stream")
+            stream_idx_pairs = {}
+            for idx, stream in enumerate(streams_as_dict):
+                stream_idx_pairs[idx] = stream
+                print(f"[{idx}] {stream}")
+            try:
+                index = int(input(f"Select a stream from 0-{len(stream_idx_pairs) - 1}: "))
+                if index > 0 and index < len(stream_idx_pairs):
+                    break
+                else:
+                    print("\Index is not in the correct range.")
+                    continue
+            except ValueError:
+                print("\nPlease input an integer")
+                continue
+        streamname=stream_idx_pairs[index]
+
+    try:
+        stream = streams_as_dict[streamname]
+    except KeyError:
+        raise KeyError(f"Stream with name {streamname} not found. Available are {_streams_to_string(streams_as_dict)}")
+    info = stream["info"]
+    streaminfo = StreamInfo(
+        name="Recorded-Mock-EEG",
+        type=info["type"][0],
+        channel_count=int(info["channel_count"][0]),
+        nominal_srate=float(info["nominal_srate"][0]),
+        channel_format=info["channel_format"][0],
+        source_id=info["source_id"][0]
+    )
+    return stream, streaminfo
 
 class RecordedMock(threading.Thread):
     def __init__(
