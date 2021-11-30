@@ -84,6 +84,56 @@ class Mock(threading.Thread):
     def __str__(self):
         return self.info.as_xml()
 
+class RecordedMock(threading.Thread):
+    def __init__(
+        self,
+            stream,
+            info
+    ):
+        self.info = info
+        self.stream = stream
+        channel_count = self.stream['time_series'].shape[1]
+        channels = self.info.desc().append_child("channels")
+        types = (f"MockEEG" for x in range(1, channel_count + 1, 1))
+        units = ("au" for x in range(1, channel_count + 1, 1))
+        names = (f"C{x:03d}" for x in range(1, channel_count + 1, 1))
+        for c, u, t in zip(names, units, types):
+            channels.append_child("channel").append_child_value(
+                "label", c
+            ).append_child_value("unit", u).append_child_value("type", t)
+        threading.Thread.__init__(self)
+
+    def stop(self):
+        self.is_running = False
+        self.join()
+        print("Shutting down")
+
+    def await_running(self):
+        try:
+            self.start()
+        except RuntimeError:
+            pass
+        while not self.is_running:
+            pass
+
+    def run(self):
+        outlet = StreamOutlet(self.info)
+        count = 0
+        print("[Mock] now sending data...")
+        self.is_running = True
+        timestamps = self.stream['time_stamps']
+        timeseries = self.stream['time_series']
+
+        while self.is_running:
+            smpl = timeseries[count]
+            count += 1
+            # now send it and wait for a bit
+            outlet.push_sample(smpl)
+            time.sleep(timestamps[count+1]-timestamps[count])
+
+    def __str__(self):
+        return self.info.as_xml()
+
 
 class MarkerMock(Mock):
     def __init__(

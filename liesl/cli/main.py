@@ -11,7 +11,6 @@ from ast import literal_eval
 
 
 def get_parser():
-
     parser = argparse.ArgumentParser(prog="liesl")
     subparsers = parser.add_subparsers(dest="subcommand")
 
@@ -73,6 +72,7 @@ def get_parser():
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser("mock", help=helpstr)
     parser_mock.add_argument("--type", help="type of the stream", default="EEG")
+    parser_mock.add_argument("--file", help="File that will be used as mock data")
 
     # xdf ---------------------------------------------------------------------
     helpstr = """inspect an XDF file"""
@@ -161,11 +161,55 @@ def show(args):
 
 
 def mock(args):
+    print(args)
     "execute subcommand mock"
     if "marker" in args.type.lower():
         from liesl.streams.mock import MarkerMock
 
         m = MarkerMock()
+    elif not (args.file is None):
+        """
+        Mocks a stream from a pre-recorded file
+        
+        Example: liesl mock --file=resting_EEG.xdf
+        Does only work for EEG data
+        """
+        from liesl.streams.mock import RecordedMock
+        from pyxdf import load_xdf
+        from pylsl import StreamInfo
+        streams, i = load_xdf(args.file)
+        print(f"Loaded file {args.file}")
+        streams_as_dict = {}
+        for ix, stream in enumerate(streams):
+            streamname_from_recorded = stream['info']['name'][0]
+            streams_as_dict[streamname_from_recorded] = stream
+        while True:
+            print("Select a stream")
+            stream_idx_pairs = {}
+            for idx, stream in enumerate(streams_as_dict):
+                stream_idx_pairs[idx] = stream
+                print(f"[{idx}] {stream}")
+            try:
+                index = int(input(f"Select a stream from 0-{len(stream_idx_pairs) - 1}: "))
+                if index > 0 and index < len(stream_idx_pairs):
+                    break
+                else:
+                    print("\Index is not in the correct range.")
+                    continue
+            except ValueError:
+                print("\nPlease input an integer")
+                continue
+        stream = streams_as_dict[stream_idx_pairs[index]]
+        info = stream["info"]
+        streaminfo = StreamInfo(
+            name="Recorded-Mock-EEG",
+            type=info["type"][0],
+            channel_count=int(info["channel_count"][0]),
+            nominal_srate=float(info["nominal_srate"][0]),
+            channel_format=info["channel_format"][0],
+            source_id=info["source_id"][0]
+        )
+        m = RecordedMock(stream, streaminfo)
     else:
         from liesl.streams.mock import Mock
 
@@ -245,4 +289,3 @@ liesl also offers a command line interface. This interface can be accessed after
         f.write(desc)
         for h in helpstr:
             f.write(h)
-
