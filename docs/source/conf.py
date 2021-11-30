@@ -19,7 +19,7 @@ from os import environ
 # -- Project information -----------------------------------------------------
 
 project = "LieSL"
-copyright = "2019, Robert Guggenberger"
+copyright = "2021, Robert Guggenberger"
 author = "Robert Guggenberger"
 
 # The full version, including alpha/beta/rc tags
