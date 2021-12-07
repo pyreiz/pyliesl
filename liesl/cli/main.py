@@ -11,7 +11,6 @@ from ast import literal_eval
 
 
 def get_parser():
-
     parser = argparse.ArgumentParser(prog="liesl")
     subparsers = parser.add_subparsers(dest="subcommand")
 
@@ -73,6 +72,8 @@ def get_parser():
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser("mock", help=helpstr)
     parser_mock.add_argument("--type", help="type of the stream", default="EEG")
+    parser_mock.add_argument("--file", help="File in xdf format that will be used as mock data")
+    parser_mock.add_argument("--stream", help="Name of stream that will be used as mock data (only when file specified)")
 
     # xdf ---------------------------------------------------------------------
     helpstr = """inspect an XDF file"""
@@ -97,7 +98,7 @@ def get_parser():
 
 
 def xdf(args):
-    "execute xdf subcommand"
+    """execute xdf subcommand"""
     from liesl.files.xdf.inspect_xdf import load_concise
     from liesl.files.xdf.inspect_xdf import load_fully
 
@@ -108,7 +109,7 @@ def xdf(args):
 
 
 def config(args):
-    "execute subcommand config"
+    """execute subcommand config"""
     if args.default:
         from liesl.cli.lsl_api import init_lsl_api_cfg
 
@@ -143,7 +144,7 @@ def config(args):
 
 
 def show(args):
-    "execute subcommand show"
+    """execute subcommand show"""
     kwargs = vars(args)
     kwargs["channel"] = kwargs.get("channel", 0)
     if args.backend == "mpl":
@@ -161,11 +162,24 @@ def show(args):
 
 
 def mock(args):
-    "execute subcommand mock"
+    """execute subcommand mock"""
     if "marker" in args.type.lower():
         from liesl.streams.mock import MarkerMock
 
         m = MarkerMock()
+    elif not (args.file is None):
+        """
+        Mocks a stream from a pre-recorded file
+        
+        Example: liesl mock --file=resting_EEG.xdf
+        Does only work for EEG data
+        """
+        from liesl.streams.mock import RecordedMock, stream_from_file
+        if args.stream is None:
+            stream, streaminfo = stream_from_file(args.file)
+        else:
+            stream, streaminfo = stream_from_file(args.file, args.stream)
+        m = RecordedMock(stream, streaminfo)
     else:
         from liesl.streams.mock import Mock
 
@@ -245,4 +259,3 @@ liesl also offers a command line interface. This interface can be accessed after
         f.write(desc)
         for h in helpstr:
             f.write(h)
-

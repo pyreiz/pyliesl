@@ -87,8 +87,11 @@ liesl mock
    usage: liesl mock [-h] [--type TYPE]
    
    optional arguments:
-     -h, --help   show this help message and exit
-     --type TYPE  type of the stream
+     -h, --help       show this help message and exit
+     --type TYPE      type of the stream
+     --file FILE      file in xdf format that will be used as mock data
+     --stream STREAM  name of stream that will be used as mock data (only when file specified)
+
 
 
 liesl xdf
@@ -103,8 +106,8 @@ liesl xdf
    optional arguments:
      -h, --help            show this help message and exit
      -a AT_MOST, --at-most AT_MOST
-                           return lastest once that many streams were found,
-                           regardloss of how long it takes. Useful if file is
+                           return latest once that many streams were found,
+                           regardless of how long it takes. Useful if file is
                            very large, and can prevent parsing the whole file.
                            defaults to sys.maxsize because integers are required,
                            but unbound in python. Set it to 0' to load the file
@@ -113,7 +116,7 @@ liesl xdf
                            return latest after this many seconds, regardless of
                            how many streams were found. Useful if the file is
                            very large, and you are sure you started recording all
-                           streams at the beginnging, as this prevents parsing
+                           streams at the beginning, as this prevents parsing
                            the whole file. defaults to 1 second. Set it to 'inf'
                            to load the file completely
 
