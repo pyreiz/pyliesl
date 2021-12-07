@@ -14,16 +14,17 @@ from pylsl import StreamInfo, StreamOutlet, local_clock
 import threading
 from math import sin, pi
 
+
 # %%
 class Mock(threading.Thread):
     def __init__(
-        self,
-        name="Liesl-Mock-EEG",
-        type="EEG",
-        channel_count=8,
-        nominal_srate=1000,
-        channel_format="float32",
-        source_id=None,
+            self,
+            name="Liesl-Mock-EEG",
+            type="EEG",
+            channel_count=8,
+            nominal_srate=1000,
+            channel_format="float32",
+            source_id=None,
     ):
 
         threading.Thread.__init__(self)
@@ -83,11 +84,14 @@ class Mock(threading.Thread):
 
     def __str__(self):
         return self.info.as_xml()
+
+
 def _streams_to_string(streams_as_dict):
-    output =""
+    output = ""
     for idx, stream in enumerate(streams_as_dict):
         output += f"{stream}, "
     return output[:-2]
+
 
 def stream_from_file(file, streamname=None):
     from pyxdf import load_xdf
@@ -115,7 +119,7 @@ def stream_from_file(file, streamname=None):
             except ValueError:
                 print("\nPlease input an integer")
                 continue
-        streamname=stream_idx_pairs[index]
+        streamname = stream_idx_pairs[index]
 
     try:
         stream = streams_as_dict[streamname]
@@ -132,9 +136,10 @@ def stream_from_file(file, streamname=None):
     )
     return stream, streaminfo
 
+
 class RecordedMock(threading.Thread):
     def __init__(
-        self,
+            self,
             stream,
             info
     ):
@@ -171,13 +176,18 @@ class RecordedMock(threading.Thread):
         self.is_running = True
         timestamps = self.stream['time_stamps']
         timeseries = self.stream['time_series']
+        num_of_samples = len(timestamps)
 
         while self.is_running:
-            smpl = timeseries[count]
+            smpl = timeseries[count % num_of_samples]
             count += 1
             # now send it and wait for a bit
             outlet.push_sample(smpl)
-            time.sleep(timestamps[count+1]-timestamps[count])
+            time_diff = timestamps[(count + 1) % num_of_samples] - timestamps[count % num_of_samples]
+            if time_diff > 0:
+                time.sleep(time_diff)
+            else:
+                time.sleep(0.001)
 
     def __str__(self):
         return self.info.as_xml()
@@ -185,14 +195,14 @@ class RecordedMock(threading.Thread):
 
 class MarkerMock(Mock):
     def __init__(
-        self,
-        name="Liesl-Mock-Marker",
-        type="Marker",
-        channel_count=1,
-        nominal_srate=0,
-        channel_format="string",
-        source_id=None,
-        markernames=["Test", "Blah", "Marker", "XXX", "Testtest", "Test-1-2-3"],
+            self,
+            name="Liesl-Mock-Marker",
+            type="Marker",
+            channel_count=1,
+            nominal_srate=0,
+            channel_format="string",
+            source_id=None,
+            markernames=["Test", "Blah", "Marker", "XXX", "Testtest", "Test-1-2-3"],
     ):
 
         threading.Thread.__init__(self)
@@ -221,4 +231,3 @@ class MarkerMock(Mock):
             print(f"Pushed {sample} at {tstamp}")
             outlet.push_sample(sample, tstamp)
             time.sleep(rand())
-
