@@ -94,7 +94,15 @@ class MarkerMock(Mock):
         nominal_srate=0,
         channel_format="string",
         source_id=None,
-        markernames=["Test", "Blah", "Marker", "XXX", "Testtest", "Test-1-2-3"],
+        markernames=[
+            "Test",
+            "Blah",
+            "Marker",
+            "XXX",
+            "Testtest",
+            "Test-1-2-3",
+        ],
+        verbose=True,
     ):
 
         threading.Thread.__init__(self)
@@ -107,6 +115,7 @@ class MarkerMock(Mock):
         )
         self.channel_count = channel_count
         self.markernames = markernames
+        self.verbose = verbose
 
     def generate_marker(self):
         while True:
@@ -120,7 +129,8 @@ class MarkerMock(Mock):
         while self.is_running:
             sample = next(markers)
             tstamp = local_clock()
-            print(f"Pushed {sample} at {tstamp}")
+            if self.verbose:
+                print(f"Pushed {sample} at {tstamp}")
             outlet.push_sample(sample, tstamp)
             time.sleep(rand())
 

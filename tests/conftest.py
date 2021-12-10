@@ -14,7 +14,7 @@ def mock():
 
 @fixture(scope="session")
 def markermock():
-    mock = MarkerMock()
+    mock = MarkerMock(verbose=False)
     mock.await_running()
     yield mock
     mock.stop()

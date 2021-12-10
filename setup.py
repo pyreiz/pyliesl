@@ -9,7 +9,7 @@ with (Path(__file__).parent / "requirements.txt").open() as f:
 
 setup(
     name="liesl",
-    version="0.3.4.8",
+    version="0.3.4.9",
     description="Toolbox to receive and process LSL streams and handle XDF files.",
     long_description=long_description,
     long_description_content_type="text/markdown",
