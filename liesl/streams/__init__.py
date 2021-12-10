@@ -6,14 +6,14 @@ import socket, os
 
 
 def get_localhostname():
-    if os.environ.get("DOC", False) == True:
+    if os.environ.get("DOC") is None:
         return socket.gethostname()
     else:
         return "sphinx-doc"
 
 
 def get_ip_adress():
-    if os.environ.get("DOC", False) == True:
+    if os.environ.get("DOC") is None:
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect(("8.8.8.8", 80))
