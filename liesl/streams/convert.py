@@ -85,14 +85,15 @@ def streaminfoxml_to_dict(xml: str) -> dict:
     except KeyError:  # pragma: no cover
         return None
 
-    output["desc"] = dict(desc)
-    output["desc"]["channels"] = dict(output["desc"]["channels"])
-    channels = output["desc"]["channels"]["channel"]
-    if type(channels) == list:
-        for idx, chan in enumerate(channels):
-            tmp = dict(chan)
-            tmp["idx"] = idx
-            output["desc"]["channels"]["channel"][idx] = tmp
+    if output["desc"] is not None:
+        output["desc"] = dict(desc)
+        output["desc"]["channels"] = dict(output["desc"]["channels"])
+        channels = output["desc"]["channels"]["channel"]
+        if type(channels) == list:
+            for idx, chan in enumerate(channels):
+                tmp = dict(chan)
+                tmp["idx"] = idx
+                output["desc"]["channels"]["channel"][idx] = tmp
     else:
         tmp = dict(channels)
         tmp["idx"] = 0
