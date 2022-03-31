@@ -1,4 +1,4 @@
-from liesl.streams.mock import Mock, MarkerMock
+from liesl.streams.mock import DescriptionlessMock, Mock, MarkerMock
 from pytest import fixture
 from liesl.files.labrecorder.cli_wrapper import LabRecorderCLI
 import time
@@ -15,6 +15,14 @@ def mock():
 @fixture(scope="session")
 def markermock():
     mock = MarkerMock(verbose=False)
+    mock.await_running()
+    yield mock
+    mock.stop()
+
+
+@fixture(scope="session")
+def desclessmock():
+    mock = DescriptionlessMock()
     mock.await_running()
     yield mock
     mock.stop()

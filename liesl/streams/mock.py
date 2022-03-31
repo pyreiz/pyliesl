@@ -15,10 +15,10 @@ import threading
 from math import sin, pi
 
 # %%
-class Mock(threading.Thread):
+class DescriptionlessMock(threading.Thread):
     def __init__(
         self,
-        name="Liesl-Mock-EEG",
+        name="Liesl-Descless-Mock",
         type="EEG",
         channel_count=8,
         nominal_srate=1000,
@@ -37,14 +37,6 @@ class Mock(threading.Thread):
         self.channel_count = channel_count
         self.samplestep = 1 / nominal_srate
         self.is_running = False
-        channels = self.info.desc().append_child("channels")
-        types = (f"MockEEG" for x in range(1, channel_count + 1, 1))
-        units = ("au" for x in range(1, channel_count + 1, 1))
-        names = (f"C{x:03d}" for x in range(1, channel_count + 1, 1))
-        for c, u, t in zip(names, units, types):
-            channels.append_child("channel").append_child_value(
-                "label", c
-            ).append_child_value("unit", u).append_child_value("type", t)
 
     def stop(self):
         self.is_running = False
@@ -83,6 +75,38 @@ class Mock(threading.Thread):
 
     def __str__(self):
         return self.info.as_xml()
+
+
+class Mock(DescriptionlessMock):
+    def __init__(
+        self,
+        name="Liesl-Mock-EEG",
+        type="EEG",
+        channel_count=8,
+        nominal_srate=1000,
+        channel_format="float32",
+        source_id=None,
+    ):
+
+        threading.Thread.__init__(self)
+
+        if source_id == None:
+            source_id = str(hash(self))
+
+        self.info = StreamInfo(
+            name, type, channel_count, nominal_srate, channel_format, source_id
+        )
+        self.channel_count = channel_count
+        self.samplestep = 1 / nominal_srate
+        self.is_running = False
+        channels = self.info.desc().append_child("channels")
+        types = (f"MockEEG" for x in range(1, channel_count + 1, 1))
+        units = ("au" for x in range(1, channel_count + 1, 1))
+        names = (f"C{x:03d}" for x in range(1, channel_count + 1, 1))
+        for c, u, t in zip(names, units, types):
+            channels.append_child("channel").append_child_value(
+                "label", c
+            ).append_child_value("unit", u).append_child_value("type", t)
 
 
 class MarkerMock(Mock):

@@ -14,6 +14,7 @@ test: build
 	virtualenv .test
 	source .test/bin/activate
 	pip install pyxdf
+	pip install -r tests/requirements.txt
 	pip install git+https://github.com/labstreaminglayer/liblsl-Python.git
 	pip install dist/*.whl
 	pytest

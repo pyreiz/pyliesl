@@ -11,3 +11,10 @@ def test_markermock_str(markermock, capsys):
     assert "<name>Liesl-Mock-Marker</name>" in out
     assert "<type>Marker</type>" in out
 
+
+def test_desclessmock(desclessmock, capsys):
+    print(desclessmock)
+    out, err = capsys.readouterr()
+    assert "<name>Liesl-Descless-Mock</name>" in out
+    assert "<type>EEG</type>" in out
+
