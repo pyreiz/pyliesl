@@ -1,19 +1,21 @@
-from liesl.streams.finder import recover_info 
+from liesl.streams.finder import recover_info
 import liesl.api as liesl
 import socket
 from pylsl import StreamInfo, StreamInlet
 import pytest
 
 
-def test_find_all(markermock, mock):
-    assert len(liesl.get_streaminfos_matching()) == 2
+def test_find_all(markermock, mock, desclessmock):
+    assert len(liesl.get_streaminfos_matching()) == 3
 
 
-def test_find_selective(markermock, mock):
+def test_find_selective(markermock, mock, desclessmock):
     assert len(liesl.get_streaminfos_matching(name="Liesl-Mock-EEG")) == 1
     assert len(liesl.get_streaminfos_matching(name="Liesl-Mock-Marker")) == 1
+    assert len(liesl.get_streaminfos_matching(name="Liesl-Descless-Mock")) == 1
     assert len(liesl.get_streams_matching(name="Liesl-Mock-EEG")) == 1
     assert len(liesl.get_streams_matching(name="Liesl-Mock-Marker")) == 1
+    assert len(liesl.get_streams_matching(name="Liesl-Descless-Mock")) == 1
     assert liesl.get_streams_matching(name="notexisting") == None
     assert liesl.get_streaminfos_matching(name="notexisting") == None
 

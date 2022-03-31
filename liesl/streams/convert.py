@@ -4,10 +4,12 @@ Convert streams
 ---------------
 """
 from liesl.streams._xmltodict import parse as xml_to_dict
-from typing import Dict
+from typing import Dict, Type
 from pylsl import StreamInlet
 
-ChannelIndexMap = Dict[str, int]  #: A Mapping from channel-names to channel-indices
+ChannelIndexMap = Dict[
+    str, int
+]  #: A Mapping from channel-names to channel-indices
 # %%
 def inlet_to_dict(inlet: StreamInlet) -> dict:
     """convert inlet information into a dictionary
@@ -85,18 +87,23 @@ def streaminfoxml_to_dict(xml: str) -> dict:
     except KeyError:  # pragma: no cover
         return None
 
-    output["desc"] = dict(desc)
-    output["desc"]["channels"] = dict(output["desc"]["channels"])
-    channels = output["desc"]["channels"]["channel"]
-    if type(channels) == list:
-        for idx, chan in enumerate(channels):
-            tmp = dict(chan)
-            tmp["idx"] = idx
-            output["desc"]["channels"]["channel"][idx] = tmp
-    else:
-        tmp = dict(channels)
-        tmp["idx"] = 0
-        output["desc"]["channels"]["channel"] = [tmp]
+    try:
+        output["desc"] = dict(desc)
+        output["desc"]["channels"] = dict(output["desc"]["channels"])
+        channels = output["desc"]["channels"]["channel"]
+
+        if type(channels) == list:
+            for idx, chan in enumerate(channels):
+                tmp = dict(chan)
+                tmp["idx"] = idx
+                output["desc"]["channels"]["channel"][idx] = tmp
+        else:
+            tmp = dict(channels)
+            tmp["idx"] = 0
+            output["desc"]["channels"]["channel"] = [tmp]
+
+    except TypeError:  # pragma: no cover
+        output["desc"] = dict()
 
     return output
 
