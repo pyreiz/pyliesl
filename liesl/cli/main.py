@@ -26,7 +26,9 @@ def get_parser():
                  user: ~/lsl_api/lsl_api.cfg or
                           C:\\Users\\username\\lsl_api\\lsl_api.cfg on Windows.
                  local: lsl_api.cfg in the current working directory"""
-    parser_cfg.add_argument("scope", choices=["system", "user", "local"], help=helpstr)
+    parser_cfg.add_argument(
+        "scope", choices=["system", "user", "local"], help=helpstr
+    )
     parser_cfg.add_argument(
         "--default",
         action="store_true",
@@ -49,13 +51,21 @@ def get_parser():
         default="['any']",
         type=literal_eval,
     )
+    parser_list.add_argument(
+        "--desc",
+        help="print extended information if available",
+        default=False,
+        action="store_true",
+    )
 
     # show --------------------------------------------------------------------
     helpstr = """Visualize a specific LSL streams"""
     parser_show = subparsers.add_parser("show", help=helpstr)
     parser_show.add_argument("--name", help="name of the stream")
     parser_show.add_argument("--type", help="type of the stream")
-    parser_show.add_argument("--channel", help="which channel to visualize", type=int)
+    parser_show.add_argument(
+        "--channel", help="which channel to visualize", type=int
+    )
     parser_show.add_argument(
         "--backend",
         choices=["mpl", "ascii"],
@@ -72,7 +82,9 @@ def get_parser():
     # mock --------------------------------------------------------------------
     helpstr = """mock a LSL stream"""
     parser_mock = subparsers.add_parser("mock", help=helpstr)
-    parser_mock.add_argument("--type", help="type of the stream", default="EEG")
+    parser_mock.add_argument(
+        "--type", help="type of the stream", default="EEG"
+    )
 
     # xdf ---------------------------------------------------------------------
     helpstr = """inspect an XDF file"""
@@ -176,12 +188,15 @@ def mock(args):
 
 def do_list(args):
     "execute subcommand list"
+    if args.desc:
+        from liesl.streams.finder import print_desc_from_available_streams
+
+        return print_desc_from_available_streams()
     if args.field == ["any"]:
         from liesl.streams.finder import print_available_streams
 
         return print_available_streams()
     else:
-        pass
         from liesl.streams.finder import print_available_streams_fields
 
         return print_available_streams_fields(args.field)

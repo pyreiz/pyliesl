@@ -49,6 +49,19 @@ def print_available_streams():
     """
     available_streams = pylsl.resolve_streams()
     for a in available_streams:
+        print(a.as_xml())
+
+
+def print_desc_from_available_streams():
+    """prints the extended info from all available streams in their xml form
+    
+    Example::
+
+        import liesl
+        liesl.print_extended_info_from_available_streams()
+    """
+    available_streams = pylsl.resolve_streams()
+    for a in available_streams:
         print(pylsl.StreamInlet(a).info().as_xml())
 
 
