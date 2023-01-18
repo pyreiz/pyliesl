@@ -49,7 +49,7 @@ def print_available_streams():
     """
     available_streams = pylsl.resolve_streams()
     for a in available_streams:
-        print(a.as_xml())
+        print(pylsl.StreamInlet(a).info().as_xml())
 
 
 def open_stream(**kwargs) -> StreamInlet:
