@@ -13,6 +13,7 @@ from random import choice
 from pylsl import StreamInfo, StreamOutlet, local_clock
 import threading
 from math import sin, pi
+from numpy.random import normal
 
 # %%
 class DescriptionlessMock(threading.Thread):
@@ -158,3 +159,43 @@ class MarkerMock(Mock):
             outlet.push_sample(sample, tstamp)
             time.sleep(rand())
 
+class GazeMock(Mock):
+    def __init__(
+        self,
+        name="Liesl-Mock-Gaze",
+        type="Gaze",
+        channel_count=2,
+        nominal_srate=60,
+        channel_format="double64",
+        source_id=None,
+        verbose=True,
+    ):
+
+        threading.Thread.__init__(self)
+
+        if source_id == None:
+            source_id = str(hash(self))
+
+        self.info = StreamInfo(
+            name, type, channel_count, nominal_srate, channel_format, source_id
+        )
+        self.channel_count = channel_count
+        self.verbose = verbose
+        self.fs = nominal_srate
+
+    def genarate_gaze(self):
+        while True:
+            yield [normal(500,10), normal(780,20)]
+
+    def run(self):
+        self.is_running = True
+        print("now sending data...")
+        outlet = StreamOutlet(self.info)
+        gazes = self.genarate_gaze()
+        while self.is_running:
+            sample = next(gazes)
+            tstamp = local_clock()
+            if self.verbose:
+                print(f"Pushed {sample} at {tstamp}")
+            outlet.push_sample(sample, tstamp)
+            time.sleep(rand()/self.fs)
