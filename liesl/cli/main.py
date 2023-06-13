@@ -178,6 +178,10 @@ def mock(args):
         from liesl.streams.mock import MarkerMock
 
         m = MarkerMock()
+    elif "gaze" in args.type.lower():
+        from liesl.streams.mock import GazeMock
+
+        m = GazeMock()
     else:
         from liesl.streams.mock import Mock
 
